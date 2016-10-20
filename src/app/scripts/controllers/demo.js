@@ -5,8 +5,8 @@
   .controller('DemoCtrl', function ($scope) {
 
 
-    $scope.text = '';
-    
+    $scope.date = 'DATE!!!';
+
     $scope.submit = function() {
         alert('submit');
     }

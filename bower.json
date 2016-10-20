@@ -1,9 +1,8 @@
 {
-  "name": "fs-angular", 
+  "name": "fs-angular-date",
   "description": "",
   "main": [
-    "dist/.js",
-    "dist/.css"
+    "dist/date.js"
   ],
   "authors": [
     "Firestitch Inc."
