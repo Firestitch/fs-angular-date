@@ -65,7 +65,9 @@ gmt
 
 				var timer;
 				$scope.output = '';
-	            element.html( '{{output}}' );
+				$scope.formatted = '';
+
+	            element.html( '{{output}}<md-tooltip>{{formatted}}</md-tooltip>' );
     	        $compile(element.contents())($scope);
 
 				$scope.$watchGroup(['fsDate', 'fsFormat'], function(newValues, oldValues, scope) {
@@ -73,6 +75,8 @@ gmt
 						$timeout.cancel(timer);
 
 	    	        update(newValues[0]);
+
+	    	        $scope.formatted = fsDate.format(newValues[0], newValues[1]);
 		    	});
 			}
 		};
