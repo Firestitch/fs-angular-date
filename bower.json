@@ -12,5 +12,9 @@
     "src",
     ".gitignore"
   ],
-  "private": false
+  "private": false,
+  "dependencies": {
+    "moment": "~2.10",
+    "moment-timezone": "~0.5.7"
+  }
 }
