@@ -47,6 +47,15 @@
     	[date, date.clone().add(1,'year'), 'Diff year'],
     ];
 
+	$scope.ranges = [
+    	{start:date, end:date, desc:'Same date/time'},
+    	{start:date, end:date.clone().add(12,'minute'), desc:'Same am/pm'},
+    	{start:date, end:date.clone().add(12,'hour'), desc:'Diff am/pm'},
+    	// [date, date.clone().add(1,'day'), 'Same month'],
+    	// [date, date.clone().add(1,'month'), 'Diff month'],
+    	// [date, date.clone().add(1,'year'), 'Diff year'],
+    ];
+
     $scope.range_formats = [
     	'date',
     	'date-time',

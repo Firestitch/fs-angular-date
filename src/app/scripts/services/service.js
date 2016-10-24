@@ -1,7 +1,13 @@
 (function () {
     'use strict';
 
-    angular.module('fs-angular-date')
+	/**
+     * @ngdoc service
+     * @name fs.fsDate
+     *
+     * @description An service to do date formatting, calculate diffs and ranges.
+     */
+     angular.module('fs-angular-date')
     .factory('fsDate', function() {
 
         return {
@@ -11,6 +17,14 @@
         };
 
 
+		/**
+	     * @ngdoc method
+	     * @name ago
+	     * @methodOf fs.fsDate
+	     * @param {string|int|date|moment} date the date to format
+	     * @param {string} format optional format for date. default is 'date'
+	     * @returns {string} The formatted date string.
+	     */
         function ago(date, format) {
         	if(!date)
         		return '';
@@ -36,6 +50,14 @@
 
 
 
+		/**
+	     * @ngdoc method
+	     * @name format
+	     * @methodOf fs.fsDate
+	     * @param {string|int|date|moment} date the date to format
+	     * @param {string} format optional format for date. default is 'date'
+	     * @returns {string} The formatted date string.
+	     */
         function format(date, format) {
         	if(!date)
         		return '';
@@ -96,6 +118,17 @@
 			return date_format+(date_format&&time_format?' ':'')+time_format;
 		}
 
+
+
+		/**
+	     * @ngdoc method
+	     * @name range
+	     * @methodOf fs.fsDate
+	     * @param {string|int|date|moment} from the from date
+	     * @param {string|int|date|moment} to the to date
+	     * @param {string} format optional format for date. default is 'date'
+	     * @returns {string} The formatted date string.
+	     */
         function range(from, to, format) {
         	var format = format || 'date';
 
@@ -168,16 +201,45 @@
         }
 
     })
-    .filter('fsDate', function(fsDate) {
+
+	/**
+	 * @ngdoc filter
+	 * @name fs.filters:fsDate
+	 * @function // all filters are a function
+     * @param {string|int|date|moment} date the date to format
+     * @param {string} format optional format for date. default is 'date'
+     * @returns {string} The formatted date string.
+	 */
+     .filter('fsDate', function(fsDate) {
 		return function(date, format) {
 			return fsDate.format(date, format);
 		};
 	})
+
+
+	/**
+	 * @ngdoc filter
+	 * @name fs.filters:fsDateAgo
+	 * @function // all filters are a function
+     * @param {string|int|date|moment} date the date to format
+     * @param {string} format optional format for date. default is 'date'
+     * @returns {string} The formatted date string.
+	 */
     .filter('fsDateAgo', function(fsDate) {
 		return function(date, format) {
 			return fsDate.ago(date, format);
 		};
 	})
+
+
+	/**
+	 * @ngdoc filter
+	 * @name fs.filters:fsDateRange
+	 * @function // all filters are a function
+     * @param {array} dates array of dates (types: string|int|date|moment) to format
+     * @param {string} format optional format for date. default is 'date'
+     * @returns {string} The formatted date string.
+	 */
     .filter('fsDateRange', function(fsDate) {
 		return function(dates, format) {
 			return fsDate.range(dates[0], dates[1], format);

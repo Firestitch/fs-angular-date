@@ -1,41 +1,45 @@
 
 (function () {
 	'use strict';
+
 /**
-full
-date
-day
-ordinal
-dayless
-yearless
-time
-24
-tz
-gmt
+     * @ngdoc directive
+     * @name fs.directives:fs-date
+     * @restrict E
+     * @param {string} fs-format optional format string.  see: https://fs.specify.com/firestitch/specs/FS-S54
+     * @param {date|moment|string|int} fs-date date to format
 */
 	angular.module('fs-angular-date',[])
 	.directive('fsDate', function(fsDate, $compile) {
 		return {
 			restrict: 'E',
 			scope: {
-				fsFormat: "=",
-				fsDate: "=",
+				format: "@?fsFormat",
+				date: "=fsDate",
 			},
 
 			link: function($scope, element, attrs) {
-				$scope.$watchGroup(['fsDate', 'fsFormat'], function(newValues, oldValues, scope) {
+				$scope.$watchGroup(['date', 'format'], function(newValues, oldValues, scope) {
 		            element.html( fsDate.format(newValues[0], newValues[1]) );
 	    	        $compile(element.contents())($scope);
 				});
 			}
 		};
 	})
+
+/**
+     * @ngdoc directive
+     * @name fs.directives:fs-date-ago
+     * @restrict E
+     * @param {string} fs-format optional format string.  see: https://fs.specify.com/firestitch/specs/FS-S54
+     * @param {date|moment|string|int} fs-date date to format
+*/
 	.directive('fsDateAgo', function(fsDate, $compile, $timeout) {
 		return {
 			restrict: 'E',
 			scope: {
-				fsFormat: "=",
-				fsDate: "=",
+				format: "@?fsFormat",
+				date: "=fsDate",
 			},
 
 			link: function($scope, element, attrs) {
@@ -70,7 +74,7 @@ gmt
 	            element.html( '{{output}}<md-tooltip>{{formatted}}</md-tooltip>' );
     	        $compile(element.contents())($scope);
 
-				$scope.$watchGroup(['fsDate', 'fsFormat'], function(newValues, oldValues, scope) {
+				$scope.$watchGroup(['date', 'format'], function(newValues, oldValues, scope) {
 					if(timer)
 						$timeout.cancel(timer);
 
@@ -78,20 +82,35 @@ gmt
 
 	    	        $scope.formatted = fsDate.format(newValues[0], newValues[1]);
 		    	});
+
+		    	$scope.$on('$destroy', function() {
+		    		if(timer)
+		    			$timeout.cancel(timer);
+		    	});
 			}
 		};
 	})
+
+
+/**
+     * @ngdoc directive
+     * @name fs.directives:fs-date-range
+     * @restrict E
+     * @param {string} fs-format optional format string.  see: https://fs.specify.com/firestitch/specs/FS-S54
+     * @param {date|moment|string|int} fs-from date to format
+     * @param {date|moment|string|int} fs-to date to format
+*/
 	.directive('fsDateRange', function(fsDate, $compile) {
 		return {
 			restrict: 'E',
 			scope: {
-				fsFormat: "=",
-				fsFrom: "=",
-				fsTo: "=",
+				format: "@?fsFormat",
+				from: "=fsFrom",
+				to: "=fsTo",
 			},
 
 			link: function($scope, element, attrs) {
-				$scope.$watchGroup(['fsFrom', 'fsToo', 'fsFormat'], function(newValues, oldValues, scope) {
+				$scope.$watchGroup(['from', 'to', 'format'], function(newValues, oldValues, scope) {
 		            element.html( fsDate.range(newValues[0], newValues[1], newValues[2]) );
     		        $compile(element.contents())($scope);
     		    });
@@ -102,7 +121,13 @@ gmt
 (function () {
     'use strict';
 
-    angular.module('fs-angular-date')
+	/**
+     * @ngdoc service
+     * @name fs.fsDate
+     *
+     * @description An service to do date formatting, calculate diffs and ranges.
+     */
+     angular.module('fs-angular-date')
     .factory('fsDate', function() {
 
         return {
@@ -112,6 +137,14 @@ gmt
         };
 
 
+		/**
+	     * @ngdoc method
+	     * @name ago
+	     * @methodOf fs.fsDate
+	     * @param {string|int|date|moment} date the date to format
+	     * @param {string} format optional format for date. default is 'date'
+	     * @returns {string} The formatted date string.
+	     */
         function ago(date, format) {
         	if(!date)
         		return '';
@@ -137,6 +170,14 @@ gmt
 
 
 
+		/**
+	     * @ngdoc method
+	     * @name format
+	     * @methodOf fs.fsDate
+	     * @param {string|int|date|moment} date the date to format
+	     * @param {string} format optional format for date. default is 'date'
+	     * @returns {string} The formatted date string.
+	     */
         function format(date, format) {
         	if(!date)
         		return '';
@@ -197,6 +238,17 @@ gmt
 			return date_format+(date_format&&time_format?' ':'')+time_format;
 		}
 
+
+
+		/**
+	     * @ngdoc method
+	     * @name range
+	     * @methodOf fs.fsDate
+	     * @param {string|int|date|moment} from the from date
+	     * @param {string|int|date|moment} to the to date
+	     * @param {string} format optional format for date. default is 'date'
+	     * @returns {string} The formatted date string.
+	     */
         function range(from, to, format) {
         	var format = format || 'date';
 
@@ -269,16 +321,45 @@ gmt
         }
 
     })
-    .filter('fsDate', function(fsDate) {
+
+	/**
+	 * @ngdoc filter
+	 * @name fs.filters:fsDate
+	 * @function // all filters are a function
+     * @param {string|int|date|moment} date the date to format
+     * @param {string} format optional format for date. default is 'date'
+     * @returns {string} The formatted date string.
+	 */
+     .filter('fsDate', function(fsDate) {
 		return function(date, format) {
 			return fsDate.format(date, format);
 		};
 	})
+
+
+	/**
+	 * @ngdoc filter
+	 * @name fs.filters:fsDateAgo
+	 * @function // all filters are a function
+     * @param {string|int|date|moment} date the date to format
+     * @param {string} format optional format for date. default is 'date'
+     * @returns {string} The formatted date string.
+	 */
     .filter('fsDateAgo', function(fsDate) {
 		return function(date, format) {
 			return fsDate.ago(date, format);
 		};
 	})
+
+
+	/**
+	 * @ngdoc filter
+	 * @name fs.filters:fsDateRange
+	 * @function // all filters are a function
+     * @param {array} dates array of dates (types: string|int|date|moment) to format
+     * @param {string} format optional format for date. default is 'date'
+     * @returns {string} The formatted date string.
+	 */
     .filter('fsDateRange', function(fsDate) {
 		return function(dates, format) {
 			return fsDate.range(dates[0], dates[1], format);

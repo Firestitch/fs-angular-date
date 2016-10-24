@@ -1,40 +1,44 @@
 (function () {
 	'use strict';
+
 /**
-full
-date
-day
-ordinal
-dayless
-yearless
-time
-24
-tz
-gmt
+     * @ngdoc directive
+     * @name fs.directives:fs-date
+     * @restrict E
+     * @param {string} fs-format optional format string.  see: https://fs.specify.com/firestitch/specs/FS-S54
+     * @param {date|moment|string|int} fs-date date to format
 */
 	angular.module('fs-angular-date',[])
 	.directive('fsDate', function(fsDate, $compile) {
 		return {
 			restrict: 'E',
 			scope: {
-				fsFormat: "=",
-				fsDate: "=",
+				format: "@?fsFormat",
+				date: "=fsDate",
 			},
 
 			link: function($scope, element, attrs) {
-				$scope.$watchGroup(['fsDate', 'fsFormat'], function(newValues, oldValues, scope) {
+				$scope.$watchGroup(['date', 'format'], function(newValues, oldValues, scope) {
 		            element.html( fsDate.format(newValues[0], newValues[1]) );
 	    	        $compile(element.contents())($scope);
 				});
 			}
 		};
 	})
+
+/**
+     * @ngdoc directive
+     * @name fs.directives:fs-date-ago
+     * @restrict E
+     * @param {string} fs-format optional format string.  see: https://fs.specify.com/firestitch/specs/FS-S54
+     * @param {date|moment|string|int} fs-date date to format
+*/
 	.directive('fsDateAgo', function(fsDate, $compile, $timeout) {
 		return {
 			restrict: 'E',
 			scope: {
-				fsFormat: "=",
-				fsDate: "=",
+				format: "@?fsFormat",
+				date: "=fsDate",
 			},
 
 			link: function($scope, element, attrs) {
@@ -69,7 +73,7 @@ gmt
 	            element.html( '{{output}}<md-tooltip>{{formatted}}</md-tooltip>' );
     	        $compile(element.contents())($scope);
 
-				$scope.$watchGroup(['fsDate', 'fsFormat'], function(newValues, oldValues, scope) {
+				$scope.$watchGroup(['date', 'format'], function(newValues, oldValues, scope) {
 					if(timer)
 						$timeout.cancel(timer);
 
@@ -77,20 +81,35 @@ gmt
 
 	    	        $scope.formatted = fsDate.format(newValues[0], newValues[1]);
 		    	});
+
+		    	$scope.$on('$destroy', function() {
+		    		if(timer)
+		    			$timeout.cancel(timer);
+		    	});
 			}
 		};
 	})
+
+
+/**
+     * @ngdoc directive
+     * @name fs.directives:fs-date-range
+     * @restrict E
+     * @param {string} fs-format optional format string.  see: https://fs.specify.com/firestitch/specs/FS-S54
+     * @param {date|moment|string|int} fs-from date to format
+     * @param {date|moment|string|int} fs-to date to format
+*/
 	.directive('fsDateRange', function(fsDate, $compile) {
 		return {
 			restrict: 'E',
 			scope: {
-				fsFormat: "=",
-				fsFrom: "=",
-				fsTo: "=",
+				format: "@?fsFormat",
+				from: "=fsFrom",
+				to: "=fsTo",
 			},
 
 			link: function($scope, element, attrs) {
-				$scope.$watchGroup(['fsFrom', 'fsToo', 'fsFormat'], function(newValues, oldValues, scope) {
+				$scope.$watchGroup(['from', 'to', 'format'], function(newValues, oldValues, scope) {
 		            element.html( fsDate.range(newValues[0], newValues[1], newValues[2]) );
     		        $compile(element.contents())($scope);
     		    });
