@@ -1,25 +1,93 @@
-<h1>{{date}}</h1>
+<style>
+	table {
+		border: 1px solid grey;
+			border-spacing: 0px;
+			border-collapse: separate;
+	}
+		td {
+			border: 1px solid grey;
+			padding: 5px 15px;
+		}
 
-
+</style>
 <h2>Date</h2>
-
-<fs-date fs-date="date"></fs-date>
-
-{{time | fs-date:'short-date-lognthtingasdlhkasdkgjfad9-sd-asddas--das-das-asd-d-!'}}
+<p>Format names can be mixed with various options.  See below the most likely examples.</p>
+<table>
+	<th>Format</th><th>Directive</th><th>Filter</th></tr>
+	<tr>
+		<td> none </td>
+		<td>
+			<fs-date fs-date="date"></fs-date><br/>
+			<code>&lt;fs-date fs-date="date"&gt;&lt;/fs-date&gt;</code>
+		</td>
+		<td>
+			{{date | fsDate}}<br/>
+			<code>{{'{{'}}date | fsDate{{'}\}'}}</code>
+		</td>
+	</tr>
+	<tr ng-repeat="format in formats">
+		<td> {{format}} </td>
+		<td>
+			<fs-date fs-date="date" fs-format="format"></fs-date><br/>
+			<code>&lt;fs-date fs-date="date" fs-format="'{{format}}'"&gt;&lt;/fs-date&gt;</code>
+		</td>
+		<td>
+			{{date | fsDate:format}}<br/>
+			<code>{{'{{'}}date | fsDate:'{{format}}'{{'}\}'}}</code>
+		</td>
+	</tr>
+</table>
 
 
 
 <h2>Ago</h2>
+<p>There is only one format for ago, it includes both display format and a mouseover tooltip, as shown below</p>
+<table>
+	<th>Format</th><th>Directive</th><th>Filter</th></tr>
+	<tr ng-repeat="from_date in from_dates">
+		<td> {{from_date | fsDate:'date-time'}} </td>
+		<td>
+			<fs-date-ago fs-date="from_date"></fs-date-ago><br/>
+			<code>&lt;fs-date-ago fs-date="from_date"&gt;&lt;/fs-date-ago&gt;</code>
+		</td>
+		<td>
+			{{from_date | fsDateAgo}}<br/>
+			<code>{{'{{'}}from_date | fsDateAgo{{'}\}'}}</code>
+		</td>
+	</tr>
+	<tr>
+		<td> {{from_dates[10] | fsDate:'date-time'}} </td>
+		<td>
+			<fs-date-ago fs-date="from_dates[10]" fs-format="'date-time'"></fs-date-ago><br/>
+			<code>&lt;fs-date-ago fs-date="from_date" fs-format="'date-time'"&gt;&lt;/fs-date-ago&gt;</code>
+		</td>
+		<td>
+			{{from_dates[10] | fsDateAgo:'date-time'}}<br/>
+			<code>{{'{{'}}from_date | fsDateAgo:'date-time'{{'}\}'}}</code>
+		</td>
+	</tr>
+</table>
 
-<fs-date-ago fs-date="date"></fs-date-ago>
 
-{{time | fs-date-ago}}
 
 
 
 <h2>Range</h2>
-
-<fs-date-range fs-from="from" fs-to="to"></fs-date-range>
-
-
-
+<p>When dealing with 2 dates in a range, unnecessary repetition can be avoided using the “range” parameter.  Note that range parameter works along with other date time format patterns.</p>
+<table>
+	<tr><th>format</th><th>Context</th><th>Directive</th><th>Filter</th></tr>
+	<tbody ng-repeat="format in range_formats">
+		<tr ng-repeat="range in ranges">
+			<td> {{format}} </td>
+			<td> {{range[2]}} </td>
+			<td>
+				<fs-date-range fs-from="range[0]" fs-to="range[1]" fs-format="format"></fs-date-range><br/>
+				<code>&lt;fs-date-range fs-from="range[0]" fs-to="range[1]" fs-format="{{format}}"&gt;&lt;/fs-date-range&gt;</code>
+			</td>
+			<td>
+				{{range | fsDateRange:format}}<br/>
+				<code>{{'{{'}}range | fsDateRange:'{{format}}'{{'}\}'}}</code>
+			</td>
+		</tr>
+	</tbody>
+</table>

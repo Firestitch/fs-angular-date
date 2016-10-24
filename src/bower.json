@@ -9,7 +9,9 @@
     "angular": "1.5.0",
     "angular-material": "1.0.5",
     "angular-ui-router": "0.2.15",
-    "fs-boilerplate-styles": "latest"
+    "fs-boilerplate-styles": "latest",
+    "moment": ">= 2.10.0",
+    "moment-timezone": "latest"
   },
   "devDependencies": {
     "angular-mocks": "1.5.0",
