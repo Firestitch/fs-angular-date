@@ -123,7 +123,7 @@
 
 	/**
      * @ngdoc service
-     * @name fs.fsDate
+     * @name fs.services:fsDate
      *
      * @description An service to do date formatting, calculate diffs and ranges.
      */
@@ -140,7 +140,7 @@
 		/**
 	     * @ngdoc method
 	     * @name ago
-	     * @methodOf fs.fsDate
+	     * @methodOf fs.services:fsDate
 	     * @param {string|int|date|moment} date the date to format
 	     * @param {string} format optional format for date. default is 'date'
 	     * @returns {string} The formatted date string.
@@ -173,7 +173,7 @@
 		/**
 	     * @ngdoc method
 	     * @name format
-	     * @methodOf fs.fsDate
+	     * @methodOf fs.services:fsDate
 	     * @param {string|int|date|moment} date the date to format
 	     * @param {string} format optional format for date. default is 'date'
 	     * @returns {string} The formatted date string.
@@ -243,7 +243,7 @@
 		/**
 	     * @ngdoc method
 	     * @name range
-	     * @methodOf fs.fsDate
+	     * @methodOf fs.services:fsDate
 	     * @param {string|int|date|moment} from the from date
 	     * @param {string|int|date|moment} to the to date
 	     * @param {string} format optional format for date. default is 'date'
