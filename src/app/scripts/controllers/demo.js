@@ -38,22 +38,14 @@
     ];
 
     var date = moment('2016-03-12 07:22');
-	$scope.ranges = [
-    	[date, date, 'Same date/time'],
-    	[date, date.clone().add(12,'minute'), 'Same am/pm'],
-    	[date, date.clone().add(12,'hour'), 'Diff am/pm'],
-    	[date, date.clone().add(1,'day'), 'Same month'],
-    	[date, date.clone().add(1,'month'), 'Diff month'],
-    	[date, date.clone().add(1,'year'), 'Diff year'],
-    ];
 
 	$scope.ranges = [
     	{start:date, end:date, desc:'Same date/time'},
     	{start:date, end:date.clone().add(12,'minute'), desc:'Same am/pm'},
     	{start:date, end:date.clone().add(12,'hour'), desc:'Diff am/pm'},
-    	// [date, date.clone().add(1,'day'), 'Same month'],
-    	// [date, date.clone().add(1,'month'), 'Diff month'],
-    	// [date, date.clone().add(1,'year'), 'Diff year'],
+    	{start:date, end:date.clone().add(1,'day'), desc:'Same month'},
+    	{start:date, end:date.clone().add(1,'month'), desc:'Diff month'},
+    	{start:date, end:date.clone().add(1,'year'), desc:'Diff year'},
     ];
 
     $scope.range_formats = [

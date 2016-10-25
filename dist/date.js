@@ -45,24 +45,58 @@
 			link: function($scope, element, attrs) {
 
 				function calcDelay(date) {
+					if(!date)
+						return false;
+
 					var now = moment();
 					if(Math.abs(now.diff(date,'hour',true)) > 24)
 						return false;
 					if(Math.abs(now.diff(date,'hour',true)) < 1)
-						return 60000;
+						return 61000;
 
-					return (60 - date.minute()) * 60000;
+					return ((60 - date.minute()) * 60000) + 1000;
 				}
 
-				function update(date) {
-					var date = date || $scope.fsDate;
+				function update(date, format) {
+					var date = date || $scope.date;
+					var format = format || $scope.format;
 
-					$scope.output = fsDate.ago(date, $scope.fsFormat);
+					if(!date) {
+						$scope.output = '';
+						return false;
+					}
+
+					$scope.output = fsDate.ago(date, format);
+
+
+	    	        var now = moment();
+	    	        var minute_diff = Math.round(now.diff(date,'minute',true));
+	    	        var hour_diff = Math.round(now.diff(date,'hour',true));
+	    	        var day_diff = Math.round(now.diff(date,'day',true));
+	    	        var ago = '';
+
+	    	        if(minute_diff==0 && hour_diff==0)
+	    	        	ago = 'now';
+	    	        else if(minute_diff<0 && minute_diff>-60)
+	    	        	ago = Math.abs(minute_diff)+'m from now';
+	    	        else if(minute_diff>0 && minute_diff<60)
+	    	        	ago = Math.abs(minute_diff)+'m ago';
+	    	        else if(hour_diff<0 && hour_diff>-24)
+	    	        	ago = Math.abs(hour_diff)+'h from now';
+	    	        else if(hour_diff>0 && hour_diff<24)
+	    	        	ago = Math.abs(hour_diff)+'h ago';
+	    	        else if(day_diff<0)
+	    	        	ago = Math.abs(day_diff)+'d from now';
+	    	        else if(day_diff>0)
+	    	        	ago = Math.abs(day_diff)+'d ago';
+
+	    	        $scope.formatted = fsDate.format(date, 'date-time') +' ~ '+ago;
+
 
 	    	        var delay = calcDelay(date);
 	    	        if(delay) {
 		    	        timer = $timeout(function(){
-		    	        	update();
+		    	        	update(date, format);
 		    	        }, delay);
 		    		}
 				}
@@ -75,12 +109,12 @@
     	        $compile(element.contents())($scope);
 
 				$scope.$watchGroup(['date', 'format'], function(newValues, oldValues, scope) {
+					var date = newValues[0];
+					var format = newValues[1];
 					if(timer)
 						$timeout.cancel(timer);
 
-	    	        update(newValues[0]);
-
-	    	        $scope.formatted = fsDate.format(newValues[0], newValues[1]);
+	    	        update(date, format);
 		    	});
 
 		    	$scope.$on('$destroy', function() {
