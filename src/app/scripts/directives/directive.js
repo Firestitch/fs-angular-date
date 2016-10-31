@@ -57,7 +57,7 @@
 				}
 
 				function update(date, format) {
-					var date = date || $scope.date;
+					var date = moment(date || $scope.date);
 					var format = format || $scope.format;
 
 					if(!date) {
