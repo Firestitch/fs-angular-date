@@ -200,53 +200,6 @@
 	        return output;
         }
 
-    })
-
-	/**
-	 * @ngdoc filter
-	 * @name fs.filters:fsDate
-	 * @function // all filters are a function
-     * @param {string|int|date|moment} date the date to format
-     * @param {string} format optional format for date. default is 'date'
-     * @returns {string} The formatted date string.
-	 */
-     .filter('fsDate', function(fsDate) {
-		return function(date, format) {
-			return fsDate.format(date, format);
-		};
-	})
-
-
-	/**
-	 * @ngdoc filter
-	 * @name fs.filters:fsDateAgo
-	 * @function // all filters are a function
-     * @param {string|int|date|moment} date the date to format
-     * @param {string} format optional format for date. default is 'date'
-     * @returns {string} The formatted date string.
-	 */
-    .filter('fsDateAgo', function(fsDate) {
-		return function(date, format) {
-			return fsDate.ago(date, format);
-		};
-	})
-
-
-	/**
-	 * @ngdoc filter
-	 * @name fs.filters:fsDateRange
-	 * @function // all filters are a function
-     * @param {array} dates array of dates (types: string|int|date|moment) to format
-     * @param {string} format optional format for date. default is 'date'
-     * @returns {string} The formatted date string.
-	 */
-    .filter('fsDateRange', function(fsDate) {
-		return function(dates, format) {
-			return fsDate.range(dates[0], dates[1], format);
-		};
-	})
-	;
-
-
+    });
 
 })();
