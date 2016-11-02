@@ -6,7 +6,7 @@
      * @param {string|int|date|moment} date the date to format
      * @param {string} format optional format for date. default is 'date'
 	 */
-     angular.module('fs-angular-date')
+     angular.module('fs-angular-date',[])
      .filter('fsDate', function(fsDate) {
 		return function(date, format) {
 			return fsDate.format(date, format);

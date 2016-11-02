@@ -6,7 +6,7 @@
      * @param {string|int|date|moment} date the date to format
      * @param {string} format optional format for date. default is 'date'
 	 */
-     angular.module('fs-angular-date')
+     angular.module('fs-angular-date',[])
      .filter('fsDate', function(fsDate) {
 		return function(date, format) {
 			return fsDate.format(date, format);
@@ -67,7 +67,7 @@
 	 * @param {string} fs-format optional format string.  see: https://fs.specify.com/firestitch/specs/FS-S54
 	 * @param {date|moment|string|int} fs-date date to format
 */
-	angular.module('fs-angular-date',[])
+	angular.module('fs-angular-date')
 	.directive('fsDate', function(fsDate, $compile) {
 		return {
 			restrict: 'E',
