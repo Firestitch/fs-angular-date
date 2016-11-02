@@ -37,6 +37,22 @@
 		return function(dates, format) {
 			return fsDate.range(dates[0], dates[1], format);
 		};
-	});
+	})
+
+
+	/**
+	 * @ngdoc filter
+	 * @name fs.filters:fsDateDuration
+     * @param {int} time the date to format
+     * @param {object} options config options see service fsDate.duration for options
+	 */
+    .filter('fsDateDuration', function(fsDate) {
+		return function(time, options) {
+			return fsDate.duration(time, options);
+		};
+	})
+	;
+
+
 })();
 

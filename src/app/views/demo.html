@@ -93,3 +93,38 @@
 		</tr>
 	</tbody>
 </table>
+
+
+
+
+
+
+
+<h2>Duration</h2>
+<p>There is only one format for ago, it includes both display format and a mouseover tooltip, as shown below</p>
+<table>
+	<th>Format</th><th>Directive</th><th>Filter</th><th>Service</th></tr>
+	<tr ng-repeat="row in durations">
+		<td> {{from_date | fsDate:'date-time'}} </td>
+		<td>
+			<fs-date-duration fs-time="row.time" fs-unit="{{row.options.unit}}" fs-remainder="{{row.options.remainder}}"></fs-date-duration><br/>
+			<code>&lt;fs-date-duration fs-time="time" fs-unit="{{row.options.unit}}"&gt;&lt;/fs-date-duration&gt;</code>
+		</td>
+		<td>
+			{{row.time | fsDateDuration:row.options}}<br/>
+			<code>{{'{{'}}time | fsDateDuration:{{row.options}} {{'}\}'}}</code>
+		</td>
+		<td>
+			{{duration(row.time, row.options)}}<br/>
+			<code>duration(time, {{row.options}})</code>
+		</td>
+	</tr>
+</table>
+
+
+<br /><br /><br />
+
+
+
+
+

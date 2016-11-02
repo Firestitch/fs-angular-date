@@ -2,7 +2,7 @@
 
 
 angular.module('app')
-  .controller('DemoCtrl', function ($scope) {
+  .controller('DemoCtrl', function ($scope, fsDate) {
 
 
     $scope.date = moment();
@@ -54,6 +54,20 @@
     	'day-date-time',
     	'full-day-date-time',
     ];
+
+
+    $scope.durations = [
+    	{time: 1, options: {unit: 'minute', suffix: true, remainder: false}},
+    	{time: 100, options: {unit: 'minute', suffix: true, remainder: false}},
+    	{time: -100, options: {unit: 'minute', suffix: true, remainder: false}},
+    	{time: 24, options: {unit: 'hour', suffix: true, remainder: false}},
+    	{time: 48, options: {unit: 'hour', suffix: true, remainder: false}},
+    ];
+
+
+    $scope.duration = function(date, options) {
+    	return fsDate.duration(date, options);
+    };
 
 
 });
