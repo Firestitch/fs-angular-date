@@ -139,9 +139,12 @@
 			var min_diff = Math.round(moment().diff(date, 'minute', true));
 			var hour_diff = Math.round(moment().diff(date, 'hour', true));
 
-			if(Math.abs(hour_diff) >= 24)
-				return this.format(date,format);
-			else if(hour_diff==0 && min_diff==0)
+			if(Math.abs(hour_diff) >= 24) {
+				if(moment(date).year()==moment().year())
+					return this.format(date,'date-yearless');
+				else
+					return this.format(date,format);
+			}else if(hour_diff==0 && min_diff==0)
 			 	return 'now';
 			 else
 				return duration(min_diff, {
