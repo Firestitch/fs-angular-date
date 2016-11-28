@@ -10,6 +10,7 @@
 		}
 
 </style>
+
 <h2>Date</h2>
 <p>Format names can be mixed with various options.  See below the most likely examples.</p>
 <table>
@@ -99,13 +100,14 @@
 
 
 
-
 <h2>Duration</h2>
 <p>Format time as a duration.  i.e. number of minutes</p>
 <table>
-	<th>Format</th><th>Directive</th><th>Filter</th><th>Service</th></tr>
+	<th>minutes</th><th>Directive</th><th>Filter</th><th>Service</th></tr>
 	<tr ng-repeat="row in durations">
-		<td> {{from_date | fsDate:'date-time'}} </td>
+		<td>
+			{{row.time}}
+		</td>
 		<td>
 			<fs-date-duration fs-time="row.time" fs-unit="{{row.options.unit}}" fs-remainder="{{row.options.remainder}}"></fs-date-duration><br/>
 			<code>&lt;fs-date-duration fs-time="time" fs-unit="{{row.options.unit}}"&gt;&lt;/fs-date-duration&gt;</code>

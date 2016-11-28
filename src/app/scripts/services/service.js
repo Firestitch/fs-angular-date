@@ -25,32 +25,32 @@
 		 * @name duration
 		 * @methodOf fs.services:fsDate
          * @param {number} time Time represented in the specified units
-         * @param {string} options.unit The unit used to measure time (second, minute)
-         * @param {object} options &nbsp;
-         * @param {bool} options.remainder Use a decimal or string for the remainder
-         * @param {bool} options.abr Use the full word or abbreviation ie. hr vs. hours
-         * @param {bool} options.suffix Adds 'ago' or 'from now'
-         * @param {object} options.limits The upper limits of each unit
-                <ul>
-                    <li><label>second</label>60</li>
-                    <li><label>minute</label>60</li>
-                    <li><label>hour</label>24</li>
-                    <li><label>day</label>30.5</li>
-                </ul>
+         * @param {object} options configuration objects
+		 * @param {string} options.unit The unit used to measure time (second,minute,hour). default: second
+         * @param {boolean} options.remainder Use a decimal or string for the remainder. default: true
+         * @param {boolean} options.abr Use the full word or abbreviation ie. hr vs. hours. default: true
+         * @param {boolean} options.suffix Adds 'ago' or 'from now'
+         * @param {boolean|int} options.seconds second rollover limit. if false seconds will not be shown. default: 60
+         * @param {boolean|int} options.minutes minute rollover limit. if false minutes will not be shown. default: 60
+         * @param {boolean|int} options.hours hour rollover limit. if false hours will not be shown. default: 24
+         * @param {boolean|int} options.days day rollover limit. if false days will not be shown. default: 30.5
+         * @param {boolean|int} options.months month rollover limit. if false months will not be shown. default: 12
+         * @param {boolean} options.years if false seconds will not be shown.
 		 */
 		function duration(time, options) {
 
-			options = options || {};
+			options = angular.copy(options) || {};
 			options.remainder = options.remainder===undefined ? 'decimal' : options.remainder;
 			options.unit = options.unit===undefined ? 'second' : options.unit;
 			options.abr = options.abr===undefined ? true : options.abr;
 			options.suffix = options.suffix===true ? (time>0 ? " ago" : " from now") : "";
 
-			options.limits = options.limits || {};
-			options.limits.second = options.limits.second===undefined ? 60 : options.limits.second;
-			options.limits.minute = options.limits.minute===undefined ? 60 : options.limits.minute;
-			options.limits.hour = options.limits.hour===undefined ? 24 : options.limits.hour;
-			options.limits.day = options.limits.day===undefined ? 30.5 : options.limits.day;
+			options.seconds = options.seconds===undefined ? true : options.seconds;
+			options.minutes = options.minutes===undefined ? true : options.minutes;
+			options.hours = options.hours===undefined ? true : options.hours;
+			options.days = options.days===undefined ? true : options.days;
+			options.months = options.months===undefined ? true : options.months;
+			options.years = options.years===undefined ? true : options.years;
 
 			if(options.unit=='minute') {
 				time = time * 60;
@@ -60,50 +60,118 @@
 
 			time = Math.abs(parseInt(time));
 
-			if(time<options.limits.second)
-				return time + (options.abr ? "s" : plural(['second','seconds'],time)) + options.suffix;
+			var units = {
+				'seconds': {abr:'s', single:'second', plural: 'seconds'},
+				'minutes': {abr:'m', single:'minute', plural: 'minutes'},
+				'hours': {abr:'h', single:'hour', plural: 'hours'},
+				'days': {abr:'d', single:'day', plural: 'days'},
+				'months': {abr:'M', single:'month', plural: 'months'},
+				'years': {abr:'Y', single:'year', plural: 'years'},
+			};
 
-			var remainder_seconds = Math.floor(time % 60);
-			if(remainder_seconds) {
-				remainder_seconds = remainder_seconds + (options.abr ? "s" : plural(['second','seconds'],remainder_seconds));
+			var pieces = {
+				years: 0,
+				months: 0,
+				days: 0,
+				hours: 0,
+				minutes: 0,
+				seconds: 0
+			};
+
+			var remainder = time;
+
+			//break time down into allowable units
+			var total_years = time / 3600 / 24 / 365;
+			if(options.years) {
+				var years = remainder / 3600 / 24 / 365;
+				pieces.years = options.remainder=='decimal' ? round(years,1) : Math.floor(years);
+				remainder = remainder - (pieces.years * 3600 * 24 * 365);
 			}
 
-			var minutes = options.remainder=='decimal' ? round(time/60,1) : Math.floor(time/60);
-
-			if(time<(options.limits.minute * 60))
-				return minutes + (options.abr ? "m" : plural(['minute','minutes'],minutes)) + (options.remainder=='string' && remainder_seconds ? ' ' + remainder_seconds : '') + options.suffix;
-
-			var hours = time / 3600;
-			hours = options.remainder=='decimal' ? round(hours,1) : Math.floor(hours);
-
-			var remainder_minutes = Math.floor((time % (options.limits.minute * 60))/60);
-			if(remainder_minutes) {
-				remainder_minutes = remainder_minutes + (options.abr ? "m" : plural(['minute','minutes'],remainder_minutes));
+			var total_months = time / 3600 / 24 / 30.417;
+			if(options.months) {
+				var months = remainder / 3600 / 24 / 30.417;
+				pieces.months = options.remainder=='decimal' ? round(months,1) : Math.floor(months);
+				remainder = remainder - (pieces.months * 3600 * 24 * 30.417);
 			}
 
-			if(time<(options.limits.hour * 60 * 60))
-				return hours + (options.abr ? "h" : plural(['hour','hours'],hours)) + (options.remainder=='string' && remainder_minutes ? ' ' + remainder_minutes : '') + options.suffix;
-
-			var days = time / 3600 / 24;
-			days = options.remainder=='decimal' ? round(days,1) : Math.floor(days);
-
-			var remainder_hours = Math.floor((time % (options.limits.hour * 60 * 60))/60/60);
-			if(remainder_hours) {
-				remainder_hours = remainder_hours + (options.abr ? "h" : plural(['hour','hours'],remainder_hours));
+			var total_days = time / 3600 / 24;
+			if(options.days) {
+				var days = remainder / 3600 / 24;
+				pieces.days = options.remainder=='decimal' ? round(days,1) : Math.floor(days);
+				remainder = remainder - (pieces.days * 3600 * 24);
 			}
 
-			if(time<(options.limits.day * 60 * 60 * 24))
-				return days + (options.abr ? "d" : plural(['day','days'],days,false)) + (options.remainder=='string' && remainder_hours ? ' ' + remainder_hours : '') + options.suffix;
-
-			var months = time / 3600 / 24 / 30.417;
-			months = options.remainder=='decimal' ? round(months,1) : Math.floor(months);
-
-			var remainder_days = Math.floor((time % (options.limits.day * 60 * 60 * 24))/60/60/24);
-			if(remainder_days) {
-				remainder_days = remainder_days + (options.abr ? "d" : plural(['day','days'],remainder_days,false));
+			var total_hours = time / 3600;
+			if(options.hours) {
+				var hours = remainder / 3600;
+				pieces.hours = options.remainder=='decimal' ? round(hours,1) : Math.floor(hours);
+				remainder = remainder - (pieces.hours * 3600);
 			}
 
-			return months + (options.abr ? "M" : plural(['month','months'],months,false)) + (options.remainder=='string' && remainder_days ? ' ' + remainder_days : '') + options.suffix;
+			var total_minutes = time / 60;
+			if(options.minutes) {
+				var minutes = remainder / 60;
+				pieces.minutes = options.remainder=='decimal' ? round(minutes,1) : Math.floor(minutes);
+				remainder = remainder - (pieces.minutes * 60);
+			}
+
+			if(options.seconds) {
+				pieces.seconds = options.remainder=='decimal' ? round(remainder,1) : Math.floor(remainder);
+			} else {
+				//if seconds arnt allowed walk back up looking for a unit that is allowed
+				if(options.minutes)
+					pieces.minutes += Math.round(remainder/60);
+				else if(options.hours)
+					pieces.hours += Math.round(remainder/60/60);
+				else if(options.days)
+					pieces.days += Math.round(remainder/60/60/24);
+				else if(options.months)
+					pieces.months += Math.round(remainder/60/60/24/30.5);
+				else if(options.years)
+					pieces.years += Math.round(remainder/60/60/24/365);
+			}
+
+
+			//if there are numeric limits and we're under it then adjust values
+			if(options.years && isInt(options.months) && total_years*12 <= options.months) {
+				pieces.months += (pieces.years * 12);
+				pieces.years = 0;
+			}
+			if(options.months && isInt(options.days) && total_months*30.5 <= options.days) {
+				pieces.days += (pieces.months * 30.5);
+				pieces.months = 0;
+			}
+			if(options.days && isInt(options.hours)  && total_days*24 <= options.hours) {
+				pieces.hours += (pieces.days * 24);
+				pieces.days = 0;
+			}
+			if(options.hours && isInt(options.minutes)  && total_hours*60 <= options.mintues) {
+				pieces.minutes += (pieces.hours * 60);
+				pieces.hours = 0;
+			}
+
+
+			//add any non-empty values to the output array (to be joined later)
+			var output = [];
+			angular.forEach(pieces, function(value, unit) {
+				if(value)
+					output.push( value + (options.abr ? units[unit].abr :  (value==1 ? units[unit].single : units[unit].plural)) );
+			});
+
+			//there are no values so show zero of the smallest unit (i.e. "0s")
+			if(output.length==0) {
+				angular.forEach(pieces, function(value, unit) {
+					if(options[''+unit])
+						output = [ value + (options.abr ? units[unit].abr :  (value==1 ? units[unit].single : units[unit].plural)) ];
+				});
+			}
+
+			//add suffix if required
+			if(options.suffix)
+				output.push(options.suffix);
+
+			return output.join(' ');
 		}
 
 
@@ -120,6 +188,12 @@
             return roundedTempNumber / factor;
         };
 
+		function isInt(n){
+			if(typeof Number != 'undefined')
+				return Number.isInteger(n);
+			else
+				return n === +n && n === (n|0);
+		}
 
 
 
@@ -144,14 +218,15 @@
 					return this.format(date,'date-yearless');
 				else
 					return this.format(date,format);
-			}else if(hour_diff==0 && min_diff==0)
+			} else if(hour_diff==0 && min_diff==0) {
 			 	return 'now';
-			 else
+			 } else {
 				return duration(min_diff, {
 					unit: 'minute',
 					suffix: true,
-					limits: {second: 0}
+					seconds: false
 				});
+			}
 		}
 
 
