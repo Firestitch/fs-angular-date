@@ -85,36 +85,46 @@
 			var total_years = time / 3600 / 24 / 365;
 			if(options.years) {
 				var years = remainder / 3600 / 24 / 365;
-				pieces.years = options.remainder=='decimal' ? round(years,1) : Math.floor(years);
-				remainder = remainder - (pieces.years * 3600 * 24 * 365);
+				if(!(options.remainder=='decimal' && years < 1 && (options.months || options.days))) {
+					pieces.years = options.remainder=='decimal' ? round(years,1) : Math.floor(years);
+					remainder = remainder - (pieces.years * 3600 * 24 * 365);
+				}
 			}
 
 			var total_months = time / 3600 / 24 / 30.417;
 			if(options.months) {
 				var months = remainder / 3600 / 24 / 30.417;
-				pieces.months = options.remainder=='decimal' ? round(months,1) : Math.floor(months);
-				remainder = remainder - (pieces.months * 3600 * 24 * 30.417);
+				if(!(options.remainder=='decimal' && months < 1 && options.days)) {
+					pieces.months = options.remainder=='decimal' ? round(months,1) : Math.floor(months);
+					remainder = remainder - (pieces.months * 3600 * 24 * 30.417);
+				}
 			}
 
 			var total_days = time / 3600 / 24;
 			if(options.days) {
 				var days = remainder / 3600 / 24;
-				pieces.days = options.remainder=='decimal' ? round(days,1) : Math.floor(days);
-				remainder = remainder - (pieces.days * 3600 * 24);
+				if(!(options.remainder=='decimal' && days < 1 && options.hours)) {
+					pieces.days += options.remainder=='decimal' ? round(days,1) : Math.floor(days);
+					remainder = remainder - (pieces.days * 3600 * 24);
+				}
 			}
 
 			var total_hours = time / 3600;
 			if(options.hours) {
 				var hours = remainder / 3600;
-				pieces.hours = options.remainder=='decimal' ? round(hours,1) : Math.floor(hours);
-				remainder = remainder - (pieces.hours * 3600);
+				if(!(options.remainder=='decimal' && hours < 1 && options.minutes)) {
+					pieces.hours += options.remainder=='decimal' ? round(hours,1) : Math.floor(hours);
+					remainder = remainder - (pieces.hours * 3600);
+				}
 			}
 
 			var total_minutes = time / 60;
 			if(options.minutes) {
 				var minutes = remainder / 60;
-				pieces.minutes = options.remainder=='decimal' ? round(minutes,1) : Math.floor(minutes);
-				remainder = remainder - (pieces.minutes * 60);
+				if(!(options.remainder=='decimal' && minutes < 1 && options.seconds)) {
+					pieces.minutes = options.remainder=='decimal' ? round(minutes,1) : Math.floor(minutes);
+					remainder = remainder - (pieces.minutes * 60);
+				}
 			}
 
 			if(options.seconds) {

@@ -216,13 +216,16 @@
 	* @restrict E
 	* @param {int} fsTime number of units (i.e. number of seconds)
 	* @param {string} fsUnit unit type of time (second/minute/hour)
-	* @param {bool} fsRound round to nearest whole unit
 	* @param {bool} fsAbr abreviate words (ie."h/hour")
 	* @param {bool} fsSuffix include "ago/from now"
-	* @param {int} limitSecond default 60
-	* @param {int} limitMinute default 60
-	* @param {int} limitHour default 24
-	* @param {int} limitDay default 30.5
+	* @param {int} fsPrecision number of unit types type show. default: all
+	* @param {string} fsRemainder show remainers. i.e. "1.2h"   ("decimal","string") default: "decimal"
+	* @param {int|bool} fsSeconds rollover limit. if false they are not shown. default 60
+	* @param {int|bool} fsMinutes rollover limit. if false they are not shown. default 60
+	* @param {int|bool} fsHours rollover limit. if false they are not shown. default 24
+	* @param {int|bool} fsDays rollover limit. if false they are not shown. default 30.5
+	* @param {int|bool} fsMonths rollover limit. if false they are not shown. default 12
+	* @param {bool} fsYears default true
 	*/
 	.directive('fsDateDuration', function(fsDate) {
 		return {
@@ -234,10 +237,13 @@
 			   abr: "@?fsAbr",
 			   suffix: "@?fsSuffix",
 			   unit: "@?fsUnit",
-			   limitSecond: "@?fsLimitSecond",
-			   limitMinute: "@?fsLimitMinute",
-			   limitHour: "@?fsLimitHour",
-			   limitDay: "@?fsLimitDay"
+			   seconds: "@?fsSeconds",
+			   minutes: "@?fsMinutes",
+			   hours: "@?fsHours",
+			   days: "@?fsDays",
+			   months: "@?fsMonths",
+			   years: "@?fsYears",
+			   precision: "@?fsPrecision",
 			},
 
 			controller: function($scope) {
@@ -248,23 +254,24 @@
 								  remainder: $scope.remainder,
 								  abr: $scope.abr==='true',
 								  suffix: $scope.suffix==='true',
-								  limits: {} };
+								  };
 
-					if($scope.limitSecond!==undefined) {
-						options.limits.second = parseInt($scope.limitSecond);
-					}
+					if($scope.seconds!==undefined)
+						options.seconds = parseInt($scope.seconds);
+					if($scope.minutes!==undefined)
+						options.minutes = parseInt($scope.minutes);
+					if($scope.hours!==undefined)
+						options.hours = parseInt($scope.hours);
+					if($scope.days!==undefined)
+						options.days = parseInt($scope.days);
+					if($scope.months!==undefined)
+						options.months = parseInt($scope.months);
+					if($scope.years!==undefined)
+						options.years = parseInt($scope.years);
 
-					if($scope.limitMinute!==undefined) {
-						options.limits.minute = parseInt($scope.limitMinute);
-					}
+					if($scope.precision!==undefined)
+						options.precision = parseInt($scope.precision);
 
-					if($scope.limitHour!==undefined) {
-						options.limits.hour = parseInt($scope.limitHour);
-					}
-
-					if($scope.limitDay!==undefined) {
-						options.limits.day = parseInt($scope.limitDay);
-					}
 
 					$scope.duration = fsDate.duration(time,options);
 				});
@@ -361,36 +368,46 @@
 			var total_years = time / 3600 / 24 / 365;
 			if(options.years) {
 				var years = remainder / 3600 / 24 / 365;
-				pieces.years = options.remainder=='decimal' ? round(years,1) : Math.floor(years);
-				remainder = remainder - (pieces.years * 3600 * 24 * 365);
+				if(!(options.remainder=='decimal' && years < 1 && (options.months || options.days))) {
+					pieces.years = options.remainder=='decimal' ? round(years,1) : Math.floor(years);
+					remainder = remainder - (pieces.years * 3600 * 24 * 365);
+				}
 			}
 
 			var total_months = time / 3600 / 24 / 30.417;
 			if(options.months) {
 				var months = remainder / 3600 / 24 / 30.417;
-				pieces.months = options.remainder=='decimal' ? round(months,1) : Math.floor(months);
-				remainder = remainder - (pieces.months * 3600 * 24 * 30.417);
+				if(!(options.remainder=='decimal' && months < 1 && options.days)) {
+					pieces.months = options.remainder=='decimal' ? round(months,1) : Math.floor(months);
+					remainder = remainder - (pieces.months * 3600 * 24 * 30.417);
+				}
 			}
 
 			var total_days = time / 3600 / 24;
 			if(options.days) {
 				var days = remainder / 3600 / 24;
-				pieces.days = options.remainder=='decimal' ? round(days,1) : Math.floor(days);
-				remainder = remainder - (pieces.days * 3600 * 24);
+				if(!(options.remainder=='decimal' && days < 1 && options.hours)) {
+					pieces.days += options.remainder=='decimal' ? round(days,1) : Math.floor(days);
+					remainder = remainder - (pieces.days * 3600 * 24);
+				}
 			}
 
 			var total_hours = time / 3600;
 			if(options.hours) {
 				var hours = remainder / 3600;
-				pieces.hours = options.remainder=='decimal' ? round(hours,1) : Math.floor(hours);
-				remainder = remainder - (pieces.hours * 3600);
+				if(!(options.remainder=='decimal' && hours < 1 && options.minutes)) {
+					pieces.hours += options.remainder=='decimal' ? round(hours,1) : Math.floor(hours);
+					remainder = remainder - (pieces.hours * 3600);
+				}
 			}
 
 			var total_minutes = time / 60;
 			if(options.minutes) {
 				var minutes = remainder / 60;
-				pieces.minutes = options.remainder=='decimal' ? round(minutes,1) : Math.floor(minutes);
-				remainder = remainder - (pieces.minutes * 60);
+				if(!(options.remainder=='decimal' && minutes < 1 && options.seconds)) {
+					pieces.minutes = options.remainder=='decimal' ? round(minutes,1) : Math.floor(minutes);
+					remainder = remainder - (pieces.minutes * 60);
+				}
 			}
 
 			if(options.seconds) {
