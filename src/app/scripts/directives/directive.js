@@ -76,12 +76,16 @@
 					if(minute_diff==0)
 						ago = 'now';
 					else
-						ago = fsDate.duration(minute_diff, {
-							unit:'minute',
-							suffix: true,
-							abr: false,
-							limits: {second: 0}
-						});
+						ago = fsDate.duration(minute_diff,
+							{
+								unit:'minute',
+								suffix: true,
+								abr: false,
+								seconds: false,
+								remainder: 'string',
+								precision: 1
+							}
+						);
 
 					$scope.formatted = fsDate.format(date, 'date-time') +' ~ '+ago;
 

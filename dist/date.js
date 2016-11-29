@@ -135,12 +135,16 @@
 					if(minute_diff==0)
 						ago = 'now';
 					else
-						ago = fsDate.duration(minute_diff, {
-							unit:'minute',
-							suffix: true,
-							abr: false,
-							limits: {second: 0}
-						});
+						ago = fsDate.duration(minute_diff,
+							{
+								unit:'minute',
+								suffix: true,
+								abr: false,
+								seconds: false,
+								remainder: 'string',
+								precision: 1
+							}
+						);
 
 					$scope.formatted = fsDate.format(date, 'date-time') +' ~ '+ago;
 
@@ -316,6 +320,7 @@
 			options.unit = options.unit===undefined ? 'second' : options.unit;
 			options.abr = options.abr===undefined ? true : options.abr;
 			options.suffix = options.suffix===true ? (time>0 ? " ago" : " from now") : "";
+			options.precision = options.precision===undefined ? true : options.precision;
 
 			options.seconds = options.seconds===undefined ? true : options.seconds;
 			options.minutes = options.minutes===undefined ? true : options.minutes;
@@ -424,18 +429,31 @@
 			}
 
 
+			//precision rounding
+			if(options.precision) {
+				var value_count = 0;
+				angular.forEach(pieces, function(value, unit) {
+					if(value_count<options.precision && value) {
+						value_count++;
+					} else {
+						pieces[unit] = 0;
+					}
+				});
+			}
+
+
 			//add any non-empty values to the output array (to be joined later)
 			var output = [];
 			angular.forEach(pieces, function(value, unit) {
 				if(value)
-					output.push( value + (options.abr ? units[unit].abr :  (value==1 ? units[unit].single : units[unit].plural)) );
+					output.push( value + (options.abr ? units[unit].abr :  ' '+(value==1 ? units[unit].single : units[unit].plural)) );
 			});
 
 			//there are no values so show zero of the smallest unit (i.e. "0s")
 			if(output.length==0) {
 				angular.forEach(pieces, function(value, unit) {
 					if(options[''+unit])
-						output = [ value + (options.abr ? units[unit].abr :  (value==1 ? units[unit].single : units[unit].plural)) ];
+						output = [ value + (options.abr ? units[unit].abr :  ' '+(value==1 ? units[unit].single : units[unit].plural)) ];
 				});
 			}
 
@@ -496,7 +514,8 @@
 				return duration(min_diff, {
 					unit: 'minute',
 					suffix: true,
-					seconds: false
+					seconds: false,
+					remainder: 'string'
 				});
 			}
 		}

@@ -10,7 +10,7 @@
 		}
 
 </style>
-
+<!--
 <h2>Date</h2>
 <p>Format names can be mixed with various options.  See below the most likely examples.</p>
 <table>
@@ -40,7 +40,7 @@
 </table>
 
 
-
+ -->
 <h2>Ago</h2>
 <p>There is only one format for ago, it includes both display format and a mouseover tooltip, as shown below</p>
 <p>Note: the directive will update itself as time passes, the filter will not.</p>
@@ -72,7 +72,7 @@
 
 
 
-
+<!--
 
 <h2>Range</h2>
 <p>When dealing with 2 dates in a range, unnecessary repetition can be avoided using the “range” parameter.  Note that range parameter works along with other date time format patterns.</p>
@@ -87,7 +87,6 @@
 				<code>&lt;fs-date-range fs-from="range.start" fs-to="range.end" fs-format="{{format}}"&gt;&lt;/fs-date-range&gt;</code>
 			</td>
 			<td>
-				<!-- {{range | fsDateRange:format}}<br/> -->
 				{{ [range.start,range.end] | fsDateRange:format}}<br/>
 				<code>{{'{{'}} [range.start,range.end] | fsDateRange:'{{format}}'{{'}\}'}}</code>
 			</td>
@@ -123,7 +122,7 @@
 	</tr>
 </table>
 
-
+ -->
 <br /><br /><br />
 
 
