@@ -6,7 +6,7 @@
      * @param {string|int|date|moment} date the date to format
      * @param {string} format optional format for date. default is 'date'
 	 */
-     angular.module('fs-angular-date',[])
+     angular.module('fs-angular-date',['fs-angular-util','fs-angular-math'])
      .filter('fsDate', function(fsDate) {
 		return function(date, format) {
 			return fsDate.format(date, format);
@@ -51,7 +51,24 @@
 			return fsDate.duration(time, options);
 		};
 	})
-	;
+
+	/**
+	 * @ngdoc filter
+	 * @name fs.filters:fsDateGranularDuration
+     * @param {int} time the date to format
+	 */
+    .filter('fsDateGranularDuration', function(fsDate) {
+		return function(time, options) {
+           	var options = options || {};
+        	options.remainder = options.remainder===undefined ? 'string' : options.remainder;
+        	options.seconds = options.seconds===undefined ? false: options.seconds;
+        	options.months = options.months===undefined ? false : options.months;
+        	options.years = options.years===undefined ? false : options.years;
+        	options.precision = options.precision===undefined ? false : options.precision;
+
+			return fsDate.duration(time, options);
+		};
+	});
 
 
 })();

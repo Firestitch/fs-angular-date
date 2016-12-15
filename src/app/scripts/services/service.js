@@ -8,7 +8,7 @@
 	 * @description An service to do date formatting, calculate diffs and ranges.
 	 */
 	 angular.module('fs-angular-date')
-	.factory('fsDate', function() {
+	.factory('fsDate', function(fsUtil,fsMath) {
 
 		return {
 			ago: ago,
@@ -86,7 +86,7 @@
 			if(options.years) {
 				var years = remainder / 3600 / 24 / 365;
 				if(!(options.remainder=='decimal' && years < 1 && (options.months || options.days))) {
-					pieces.years = options.remainder=='decimal' ? round(years,1) : Math.floor(years);
+					pieces.years = options.remainder=='decimal' ? fsMath.round(years,1) : Math.floor(years);
 					remainder = remainder - (pieces.years * 3600 * 24 * 365);
 				}
 			}
@@ -95,7 +95,7 @@
 			if(options.months) {
 				var months = remainder / 3600 / 24 / 30.417;
 				if(!(options.remainder=='decimal' && months < 1 && options.days)) {
-					pieces.months = options.remainder=='decimal' ? round(months,1) : Math.floor(months);
+					pieces.months = options.remainder=='decimal' ? fsMath.round(months,1) : Math.floor(months);
 					remainder = remainder - (pieces.months * 3600 * 24 * 30.417);
 				}
 			}
@@ -104,7 +104,7 @@
 			if(options.days) {
 				var days = remainder / 3600 / 24;
 				if(!(options.remainder=='decimal' && days < 1 && options.hours)) {
-					pieces.days += options.remainder=='decimal' ? round(days,1) : Math.floor(days);
+					pieces.days += options.remainder=='decimal' ? fsMath.round(days,1) : Math.floor(days);
 					remainder = remainder - (pieces.days * 3600 * 24);
 				}
 			}
@@ -113,7 +113,7 @@
 			if(options.hours) {
 				var hours = remainder / 3600;
 				if(!(options.remainder=='decimal' && hours < 1 && options.minutes)) {
-					pieces.hours += options.remainder=='decimal' ? round(hours,1) : Math.floor(hours);
+					pieces.hours += options.remainder=='decimal' ? fsMath.round(hours,1) : Math.floor(hours);
 					remainder = remainder - (pieces.hours * 3600);
 				}
 			}
@@ -122,46 +122,45 @@
 			if(options.minutes) {
 				var minutes = remainder / 60;
 				if(!(options.remainder=='decimal' && minutes < 1 && options.seconds)) {
-					pieces.minutes = options.remainder=='decimal' ? round(minutes,1) : Math.floor(minutes);
+					pieces.minutes = options.remainder=='decimal' ? fsMath.round(minutes,1) : Math.floor(minutes);
 					remainder = remainder - (pieces.minutes * 60);
 				}
 			}
 
 			if(options.seconds) {
-				pieces.seconds = options.remainder=='decimal' ? round(remainder,1) : Math.floor(remainder);
+				pieces.seconds = options.remainder=='decimal' ? fsMath.round(remainder,1) : Math.floor(remainder);
 			} else {
 				//if seconds arnt allowed walk back up looking for a unit that is allowed
 				if(options.minutes)
-					pieces.minutes += Math.round(remainder/60);
+					pieces.minutes += fsMath.round(remainder/60);
 				else if(options.hours)
-					pieces.hours += Math.round(remainder/60/60);
+					pieces.hours += fsMath.round(remainder/60/60);
 				else if(options.days)
-					pieces.days += Math.round(remainder/60/60/24);
+					pieces.days += fsMath.round(remainder/60/60/24);
 				else if(options.months)
-					pieces.months += Math.round(remainder/60/60/24/30.5);
+					pieces.months += fsMath.round(remainder/60/60/24/30.5);
 				else if(options.years)
-					pieces.years += Math.round(remainder/60/60/24/365);
+					pieces.years += fsMath.round(remainder/60/60/24/365);
 			}
 
 
 			//if there are numeric limits and we're under it then adjust values
-			if(options.years && isInt(options.months) && total_years*12 <= options.months) {
+			if(options.years && fsUtil.isInt(options.months) && total_years*12 <= options.months) {
 				pieces.months += (pieces.years * 12);
 				pieces.years = 0;
 			}
-			if(options.months && isInt(options.days) && total_months*30.5 <= options.days) {
+			if(options.months && fsUtil.isInt(options.days) && total_months*30.5 <= options.days) {
 				pieces.days += (pieces.months * 30.5);
 				pieces.months = 0;
 			}
-			if(options.days && isInt(options.hours)  && total_days*24 <= options.hours) {
+			if(options.days && fsUtil.isInt(options.hours)  && total_days*24 <= options.hours) {
 				pieces.hours += (pieces.days * 24);
 				pieces.days = 0;
 			}
-			if(options.hours && isInt(options.minutes)  && total_hours*60 <= options.mintues) {
+			if(options.hours && fsUtil.isInt(options.minutes)  && total_hours*60 <= options.mintues) {
 				pieces.minutes += (pieces.hours * 60);
 				pieces.hours = 0;
 			}
-
 
 			//precision rounding
 			if(options.precision) {
@@ -174,7 +173,6 @@
 					}
 				});
 			}
-
 
 			//add any non-empty values to the output array (to be joined later)
 			var output = [];
@@ -198,30 +196,6 @@
 			return output.join(' ');
 		}
 
-
-        function plural(words,count) {
-            if(count==1)
-                return ' ' + words[0];
-            return ' ' + words[1];
-        }
-
-        function round(number, precision) {
-            var factor = Math.pow(10, precision);
-            var tempNumber = number * factor;
-            var roundedTempNumber = Math.round(tempNumber);
-            return roundedTempNumber / factor;
-        };
-
-		function isInt(n){
-			if(typeof Number != 'undefined')
-				return Number.isInteger(n);
-			else
-				return n === +n && n === (n|0);
-		}
-
-
-
-
 		/**
 		 * @ngdoc method
 		 * @name ago
@@ -234,8 +208,8 @@
 			if(!date)
 				return '';
 
-			var min_diff = Math.round(moment().diff(date, 'minute', true));
-			var hour_diff = Math.round(moment().diff(date, 'hour', true));
+			var min_diff = fsMath.round(moment().diff(date, 'minute', true));
+			var hour_diff = fsMath.round(moment().diff(date, 'hour', true));
 
 			if(Math.abs(hour_diff) >= 24) {
 				if(moment(date).year()==moment().year())
