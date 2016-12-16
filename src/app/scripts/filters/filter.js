@@ -59,14 +59,7 @@
 	 */
     .filter('fsDateGranularDuration', function(fsDate) {
 		return function(time, options) {
-           	var options = options || {};
-        	options.remainder = options.remainder===undefined ? 'string' : options.remainder;
-        	options.seconds = options.seconds===undefined ? false: options.seconds;
-        	options.months = options.months===undefined ? false : options.months;
-        	options.years = options.years===undefined ? false : options.years;
-        	options.precision = options.precision===undefined ? false : options.precision;
-
-			return fsDate.duration(time, options);
+			return fsDate.granularDuration(time, options);
 		};
 	});
 
