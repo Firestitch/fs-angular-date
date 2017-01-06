@@ -40,6 +40,9 @@
 		 */
 		function duration(time, options) {
 
+            if(!fsUtil.isNumeric(time))
+                return '';
+
 			options = angular.copy(options) || {};
 			options.remainder = options.remainder===undefined ? 'decimal' : options.remainder;
 			options.unit = options.unit===undefined ? 'second' : options.unit;

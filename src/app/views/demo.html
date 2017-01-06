@@ -87,7 +87,6 @@
 				<code>&lt;fs-date-range fs-from="range.start" fs-to="range.end" fs-format="{{format}}"&gt;&lt;/fs-date-range&gt;</code>
 			</td>
 			<td>
-				<!-- {{range | fsDateRange:format}}<br/> -->
 				{{ [range.start,range.end] | fsDateRange:format}}<br/>
 				<code>{{'{{'}} [range.start,range.end] | fsDateRange:'{{format}}'{{'}\}'}}</code>
 			</td>
@@ -124,9 +123,10 @@
 </table>
 
 
-
 <h2>Granular Duration</h2>
 {{651651 | fsDateGranularDuration}}
+<br>
+{{undefined | fsDateGranularDuration}}
 
 
 <br /><br /><br />
