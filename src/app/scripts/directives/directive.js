@@ -82,7 +82,6 @@
 								suffix: true,
 								abr: false,
 								seconds: false,
-								remainder: 'string',
 								precision: 1
 							}
 						);
@@ -160,7 +159,6 @@
 	* @param {bool} fsAbr abreviate words (ie."h/hour")
 	* @param {bool} fsSuffix include "ago/from now"
 	* @param {int} fsPrecision number of unit types type show. default: all
-	* @param {string} fsRemainder show remainers. i.e. "1.2h"   ("decimal","string") default: "decimal"
 	* @param {int|bool} fsSeconds rollover limit. if false they are not shown. default 60
 	* @param {int|bool} fsMinutes rollover limit. if false they are not shown. default 60
 	* @param {int|bool} fsHours rollover limit. if false they are not shown. default 24
@@ -174,7 +172,6 @@
 			restrict: 'E',
 			scope: {
 			   time: "=fsTime",
-			   remainder: "@?fsRemainder",
 			   abr: "@?fsAbr",
 			   suffix: "@?fsSuffix",
 			   unit: "@?fsUnit",
@@ -192,7 +189,6 @@
 				$scope.$watch('time',function(time) {
 
 					var options = { unit: $scope.unit,
-								  remainder: $scope.remainder,
 								  abr: $scope.abr==='true',
 								  suffix: $scope.suffix==='true',
 								  };

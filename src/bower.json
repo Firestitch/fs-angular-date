@@ -6,9 +6,9 @@
   "version": "0.0.0",
   "appPath": "app",
   "dependencies": {
-    "angular": "1.6.0",
+    "angular": "1.6.2",
     "angular-material": "1.1.1",
-    "angular-ui-router": "0.2.15",
+    "angular-ui-router": "0.3.2",
     "fs-boilerplate-styles": "latest",
     "moment": ">= 2.10.0",
     "moment-timezone": "latest",
@@ -17,6 +17,6 @@
     "fs-angular-string": "^1.0.0"
   },
   "resolutions": {
-    "angular": "1.6.0"
+    "angular": "1.6.2"
   }
 }

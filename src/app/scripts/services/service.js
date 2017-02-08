@@ -28,9 +28,9 @@
          * @param {number} time Time represented in the specified units
          * @param {object} options configuration objects
 		 * @param {string} options.unit The unit used to measure time (second,minute,hour). default: second
-         * @param {boolean} options.remainder Use a decimal or string for the remainder. default: true
          * @param {boolean} options.abr Use the full word or abbreviation ie. hr vs. hours. default: true
          * @param {boolean} options.suffix Adds 'ago' or 'from now'
+         * @param {boolean} options.precision Only outputs a certain number of peices of the durations ie. precision=2 outputs 2h 33m from 2h 33m 42s
          * @param {boolean|int} options.seconds second rollover limit. if false seconds will not be shown. default: 60
          * @param {boolean|int} options.minutes minute rollover limit. if false minutes will not be shown. default: 60
          * @param {boolean|int} options.hours hour rollover limit. if false hours will not be shown. default: 24
@@ -43,13 +43,27 @@
             if(!fsUtil.isNumeric(time))
                 return '';
 
+            if(typeof options == 'string') {
+                options = { seconds: !!options.match(/second/),
+                            minutes: !!options.match(/minute/),
+                            hours: !!options.match(/hour/),
+                            days: !!options.match(/day/),
+                            months: !!options.match(/month/),
+                            years: !!options.match(/year/) };
+
+                options.precision = 0;
+                angular.forEach(options,function(value) {
+                    if(value) {
+                        options.precision++;
+                    }
+                });
+            }
+
 			options = angular.copy(options) || {};
-			options.remainder = options.remainder===undefined ? 'decimal' : options.remainder;
 			options.unit = options.unit===undefined ? 'second' : options.unit;
 			options.abr = options.abr===undefined ? true : options.abr;
 			options.suffix = options.suffix===true ? (time>0 ? " ago" : " from now") : "";
-			options.precision = options.precision===undefined ? true : options.precision;
-
+			options.precision = options.precision===undefined ? 2 : options.precision;
 			options.seconds = options.seconds===undefined ? true : options.seconds;
 			options.minutes = options.minutes===undefined ? true : options.minutes;
 			options.hours = options.hours===undefined ? true : options.hours;
@@ -66,12 +80,12 @@
 			time = Math.abs(parseInt(time));
 
 			var units = {
-				'seconds': {abr:'s', single:'second', plural: 'seconds'},
-				'minutes': {abr:'m', single:'minute', plural: 'minutes'},
-				'hours': {abr:'h', single:'hour', plural: 'hours'},
-				'days': {abr:'d', single:'day', plural: 'days'},
-				'months': {abr:'M', single:'month', plural: 'months'},
-				'years': {abr:'Y', single:'year', plural: 'years'},
+				seconds: {abr:'s', single:'second', plural: 'seconds'},
+				minutes: {abr:'m', single:'minute', plural: 'minutes'},
+				hours: {abr:'h', single:'hour', plural: 'hours'},
+				days: {abr:'d', single:'day', plural: 'days'},
+				months: {abr:'M', single:'month', plural: 'months'},
+				years: {abr:'Y', single:'year', plural: 'years'},
 			};
 
 			var pieces = {
@@ -83,76 +97,59 @@
 				seconds: 0
 			};
 
+            var SECONDS_YEAR = 3600 * 24 * 365;
+            var SECONDS_MONTH = 3600 * 24 * 30.417;
+            var SECONDS_DAY = 3600 * 24;
+            var SECONDS_HOUR = 3600;
+            var SECONDS_MINUTE = 60;
+
 			var remainder = time;
 
 			//break time down into allowable units
-			var total_years = time / 3600 / 24 / 365;
-			if(options.years) {
-				var years = remainder / 3600 / 24 / 365;
-				if(!(options.remainder=='decimal' && years < 1 && (options.months || options.days))) {
-					pieces.years = options.remainder=='decimal' ? fsMath.round(years,1) : Math.floor(years);
-					remainder = remainder - (pieces.years * 3600 * 24 * 365);
-				}
+			var total_years = time / SECONDS_YEAR;
+			var years = remainder / SECONDS_YEAR;
+            if(years>=1) {
+                pieces.years = Math.floor(years);
+				remainder = remainder - (pieces.years * SECONDS_YEAR);
+            }
+
+			var total_months = time / SECONDS_MONTH;
+			var months = remainder / SECONDS_MONTH;
+
+            if(months>=1) {
+                pieces.months =  Math.floor(months);
+					remainder = remainder - (pieces.months * SECONDS_MONTH);
+            }
+
+			var total_days = time / SECONDS_DAY;
+			var days = remainder / SECONDS_DAY;
+            if(days>=1) {
+				pieces.days = Math.floor(days);
+				remainder = remainder - (pieces.days * SECONDS_DAY);
 			}
 
-			var total_months = time / 3600 / 24 / 30.417;
-			if(options.months) {
-				var months = remainder / 3600 / 24 / 30.417;
-				if(!(options.remainder=='decimal' && months < 1 && options.days)) {
-					pieces.months = options.remainder=='decimal' ? fsMath.round(months,1) : Math.floor(months);
-					remainder = remainder - (pieces.months * 3600 * 24 * 30.417);
-				}
-			}
-
-			var total_days = time / 3600 / 24;
-			if(options.days) {
-				var days = remainder / 3600 / 24;
-				if(!(options.remainder=='decimal' && days < 1 && options.hours)) {
-					pieces.days += options.remainder=='decimal' ? fsMath.round(days,1) : Math.floor(days);
-					remainder = remainder - (pieces.days * 3600 * 24);
-				}
-			}
-
-			var total_hours = time / 3600;
-			if(options.hours) {
-				var hours = remainder / 3600;
-				if(!(options.remainder=='decimal' && hours < 1 && options.minutes)) {
-					pieces.hours += options.remainder=='decimal' ? fsMath.round(hours,1) : Math.floor(hours);
-					remainder = remainder - (pieces.hours * 3600);
-				}
-			}
+			var total_hours = time / SECONDS_HOUR;
+			var hours = remainder / SECONDS_HOUR;
+            if(hours>=1) {
+				pieces.hours = Math.floor(hours);
+				remainder = remainder - (pieces.hours * SECONDS_HOUR);
+            }
 
 			var total_minutes = time / 60;
-			if(options.minutes) {
-				var minutes = remainder / 60;
-				if(!(options.remainder=='decimal' && minutes < 1 && options.seconds)) {
-					pieces.minutes = options.remainder=='decimal' ? fsMath.round(minutes,1) : Math.floor(minutes);
-					remainder = remainder - (pieces.minutes * 60);
-				}
+			var minutes = remainder / 60;
+            if(minutes>=1) {
+				pieces.minutes = Math.floor(minutes);
+				remainder = remainder - (pieces.minutes * SECONDS_MINUTE);
 			}
 
-			if(options.seconds) {
-				pieces.seconds = options.remainder=='decimal' ? fsMath.round(remainder,1) : Math.floor(remainder);
-			} else {
-				//if seconds arnt allowed walk back up looking for a unit that is allowed
-				if(options.minutes)
-					pieces.minutes += fsMath.round(remainder/60);
-				else if(options.hours)
-					pieces.hours += fsMath.round(remainder/60/60);
-				else if(options.days)
-					pieces.days += fsMath.round(remainder/60/60/24);
-				else if(options.months)
-					pieces.months += fsMath.round(remainder/60/60/24/30.5);
-				else if(options.years)
-					pieces.years += fsMath.round(remainder/60/60/24/365);
-			}
-
+            pieces.seconds = Math.floor(remainder);
 
 			//if there are numeric limits and we're under it then adjust values
 			if(options.years && fsUtil.isInt(options.months) && total_years*12 <= options.months) {
 				pieces.months += (pieces.years * 12);
 				pieces.years = 0;
 			}
+
 			if(options.months && fsUtil.isInt(options.days) && total_months*30.5 <= options.days) {
 				pieces.days += (pieces.months * 30.5);
 				pieces.months = 0;
@@ -166,30 +163,58 @@
 				pieces.hours = 0;
 			}
 
-			//precision rounding
-			if(options.precision) {
-				var value_count = 0;
-				angular.forEach(pieces, function(value, unit) {
-					if(value_count<options.precision && value) {
-						value_count++;
-					} else {
-						pieces[unit] = 0;
-					}
-				});
-			}
+            var enabled = 0;
+            var parts = {  years:   SECONDS_YEAR,
+                           months:  SECONDS_MONTH,
+                           days:    SECONDS_DAY,
+                           hours:   SECONDS_HOUR,
+                           minutes: SECONDS_MINUTE,
+                           seconds: 1 };
 
-			//add any non-empty values to the output array (to be joined later)
-			var output = [];
-			angular.forEach(pieces, function(value, unit) {
-				if(value)
-					output.push( value + (options.abr ? units[unit].abr :  ' '+(value==1 ? units[unit].single : units[unit].plural)) );
-			});
+            angular.forEach(parts,function(part, name) {
+                if(options[name]) {
+                    enabled++;
+                }
+            });
+
+            var output = [];
+            if(enabled===1) {
+
+                var seconds = 0, name = '';
+                angular.forEach(parts,function(value, tmp) {
+                    seconds += value * pieces[tmp];
+
+                    if(options[tmp]) {
+                        name = tmp;
+                    }
+                });
+
+                var value = fsMath.round(seconds/parts[name],1);
+                output.push(value + (options.abr ? units[name].abr :  ' ' + (value==1 ? units[name].single : units[name].plural)));
+
+            } else {
+
+                angular.forEach(parts, function(value, name) {
+
+                    if(options.precision && output.length>=options.precision) {
+                        return;
+                    }
+
+                    if(options[name]) {
+                        var value = pieces[name];
+                        if(value) {
+                            output.push(value + (options.abr ? units[name].abr :  ' ' + (value==1 ? units[name].single : units[name].plural)));
+                        }
+                    }
+                });
+            }
 
 			//there are no values so show zero of the smallest unit (i.e. "0s")
 			if(output.length==0) {
-				angular.forEach(pieces, function(value, unit) {
-					if(options[''+unit])
-						output = [ value + (options.abr ? units[unit].abr :  ' '+(value==1 ? units[unit].single : units[unit].plural)) ];
+				angular.forEach(parts, function(value, name) {
+					if(options[name]) {
+						output = [ '0' + (options.abr ? units[name].abr :  ' ' + (value==1 ? units[name].single : units[name].plural)) ];
+                    }
 				});
 			}
 
@@ -208,11 +233,10 @@
          */
         function granularDuration(time, options) {
             var options = options || {};
-            options.remainder = options.remainder===undefined ? 'string' : options.remainder;
             options.seconds = options.seconds===undefined ? false: options.seconds;
             options.months = options.months===undefined ? false : options.months;
             options.years = options.years===undefined ? false : options.years;
-            options.precision = options.precision===undefined ? false : options.precision;
+            options.precision = options.precision===undefined ? 3 : options.precision;
             return duration(time,options);
         }
 
@@ -242,8 +266,7 @@
 				return duration(min_diff, {
 					unit: 'minute',
 					suffix: true,
-					seconds: false,
-					remainder: 'string'
+					seconds: false
 				});
 			}
 		}
