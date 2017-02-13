@@ -368,13 +368,19 @@
 
 			time = Math.abs(parseInt(time));
 
+            var SECONDS_YEAR = 3600 * 24 * 365;
+            var SECONDS_MONTH = 3600 * 24 * 30.417;
+            var SECONDS_DAY = 3600 * 24;
+            var SECONDS_HOUR = 3600;
+            var SECONDS_MINUTE = 60;
+
 			var units = {
-				seconds: {abr:'s', single:'second', plural: 'seconds'},
-				minutes: {abr:'m', single:'minute', plural: 'minutes'},
-				hours: {abr:'h', single:'hour', plural: 'hours'},
-				days: {abr:'d', single:'day', plural: 'days'},
-				months: {abr:'M', single:'month', plural: 'months'},
-				years: {abr:'Y', single:'year', plural: 'years'},
+				years:      { abr: 'Y', single: 'year', plural: 'years', seconds: SECONDS_YEAR, next: 'months' },
+                months:     { abr: 'M', single: 'month', plural: 'months', seconds: SECONDS_MONTH, next: 'days' },
+                days:       { abr: 'd', single: 'day', plural: 'days', seconds: SECONDS_DAY, next: 'hours' },
+                hours:      { abr: 'h', single: 'hour', plural: 'hours', seconds: SECONDS_HOUR, next: 'months' },
+                minutes:    { abr: 'm', single: 'minute', plural: 'minutes', seconds: SECONDS_MINUTE, next: 'seconds' },
+                seconds:    { abr: 's', single: 'second', plural: 'seconds', seconds: 1, next: null },
 			};
 
 			var pieces = {
@@ -385,12 +391,6 @@
 				minutes: 0,
 				seconds: 0
 			};
-
-            var SECONDS_YEAR = 3600 * 24 * 365;
-            var SECONDS_MONTH = 3600 * 24 * 30.417;
-            var SECONDS_DAY = 3600 * 24;
-            var SECONDS_HOUR = 3600;
-            var SECONDS_MINUTE = 60;
 
 			var remainder = time;
 
@@ -452,38 +452,35 @@
 				pieces.hours = 0;
 			}
 
-            var enabled = 0;
-            var parts = {  years:   SECONDS_YEAR,
-                           months:  SECONDS_MONTH,
-                           days:    SECONDS_DAY,
-                           hours:   SECONDS_HOUR,
-                           minutes: SECONDS_MINUTE,
-                           seconds: 1 };
+            var enabled = [];
+            var total_seconds = 0;
+            angular.forEach(units,function(unit, name) {
 
-            angular.forEach(parts,function(part, name) {
+                total_seconds += pieces[name] * unit.seconds;
+
                 if(options[name]) {
-                    enabled++;
+                    enabled.push(name);
+                } else {
+
+                    var multiply = unit.next ? unit.seconds/units[unit.next]['seconds'] : 1;
+                    var seconds = Math.floor(pieces[name] * multiply);
+                    if(unit.next) {
+                        pieces[unit.next] += seconds;
+                    }
+
+                    pieces[name] = 0;
                 }
             });
 
             var output = [];
-            if(enabled===1) {
-
-                var seconds = 0, name = '';
-                angular.forEach(parts,function(value, tmp) {
-                    seconds += value * pieces[tmp];
-
-                    if(options[tmp]) {
-                        name = tmp;
-                    }
-                });
-
-                var value = fsMath.round(seconds/parts[name],1);
+            if(enabled.length===1) {
+                var name = enabled.join('');
+                var value = fsMath.round(total_seconds/units[name]['seconds'],1);
                 output.push(value + (options.abr ? units[name].abr :  ' ' + (value==1 ? units[name].single : units[name].plural)));
 
             } else {
 
-                angular.forEach(parts, function(value, name) {
+                angular.forEach(units, function(unit, name) {
 
                     if(options.precision && output.length>=options.precision) {
                         return;
@@ -500,7 +497,7 @@
 
 			//there are no values so show zero of the smallest unit (i.e. "0s")
 			if(output.length==0) {
-				angular.forEach(parts, function(value, name) {
+				angular.forEach(units, function(value, name) {
 					if(options[name]) {
 						output = [ '0' + (options.abr ? units[name].abr :  ' ' + (value==1 ? units[name].single : units[name].plural)) ];
                     }
