@@ -452,11 +452,13 @@
 				pieces.hours = 0;
 			}
 
-            var enabled = [];
             var total_seconds = 0;
             angular.forEach(units,function(unit, name) {
-
                 total_seconds += pieces[name] * unit.seconds;
+            });
+
+            var enabled = [];
+            angular.forEach(units,function(unit, name) {
 
                 if(options[name]) {
                     enabled.push(name);
