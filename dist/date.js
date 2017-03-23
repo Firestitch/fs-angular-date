@@ -304,11 +304,9 @@
 			duration: duration,
 			format: format,
 			range: range,
-            granularDuration: granularDuration
+            granularDuration: granularDuration,
+            iso8601: iso8601
 		};
-
-
-
 
 		/**
 		 * @ngdoc method
@@ -711,7 +709,20 @@
 			return output;
 		}
 
+        /**
+         * @ngdoc method
+         * @name iso8601
+         * @methodOf fs.services:fsDate
+         * @param {date|string} date The object to be converted
+         * @returns {string} The date string in iso8601
+         */
+        function iso8601(date) {
+            if(!date)
+                return '';
+
+            return moment(date).format();
+        }
+
 	});
 
 })();
-
