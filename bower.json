@@ -14,8 +14,8 @@
   ],
   "private": false,
   "dependencies": {
-    "moment": "~2.10",
-    "moment-timezone": "~0.5.7",
+    "moment": ">2.0.0",
+    "moment-timezone": ">0.5.0",
     "fs-angular-util": "^1.0.0",
     "fs-angular-math": "^1.0.0"
   }
