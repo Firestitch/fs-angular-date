@@ -1,15 +1,10 @@
-<h3>{{5 * 60 | fsDateDuration:'hour' }}</h3>
-<!--
-
-<br>
-{{undefined | fsDateGranularDuration}}
-
-
-{{23570 | fsDateDuration:'hour-minute' }}
-<br><br>
+<h3>{{5 * 60 * 60 | fsDateDuration:'hour' }}</h3>
+	<h3>undefined - {{undefined | fsDateGranularDuration}}</h3>
+<h3>{{23570 | fsDateDuration:'hour-minute' }}</h3>
 <h3>{{23570 | fsDateDuration:'hour' }}</h3>
 <h3>{{65165132 | fsDateDuration:'year-hour-minute' }}</h3>
 <h3>{{65165132 | fsDateDuration:'year-day-hour-minute' }}</h3>
+<h3>{{65165132 | fsDateDuration:'day-minute' }}</h3>
 <h3>{{65165132 | fsDateDuration:'year' }}</h3>
 
 
@@ -150,6 +145,3 @@
 
 
 
-
-
- -->

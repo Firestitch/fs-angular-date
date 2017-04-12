@@ -68,17 +68,17 @@
     	{time: 48836, options: {unit: 'minute', suffix: true, remainder: false}},
     	{time: 571885, options: {unit: 'minute', suffix: true, remainder: false}},
     	{time: 571885, options: {unit: 'minute', suffix: true, remainder: false, abr: false}},
-    	{time: 571885, options: {unit: 'minute', suffix: true, remainder: false, allow_months: false, allow_years: false, allow_days:false, allow_seconds: false}},
-    	{time: 571885, options: {unit: 'minute', suffix: true, remainder: false, allow_hours: false, allow_minutes: false, allow_seconds: false}},
-    	{time: 12*60, options: {unit: 'minute', remainder: false, allow_hours: 48}},
-    	{time: 36*60, options: {unit: 'minute', remainder: false, allow_hours: 48}},
-    	{time: 48*60, options: {unit: 'minute', remainder: false, allow_hours: 48}},
-    	{time: 60*60, options: {unit: 'minute', remainder: false, allow_hours: 48}},
-    	{time: 72*60, options: {unit: 'minute', remainder: false, allow_hours: 48}},
-    	{time: 84*60, options: {unit: 'minute', remainder: false, allow_hours: 48}},
-    	{time: 96*60, options: {unit: 'minute', remainder: false, allow_hours: 48}},
-    	{time: 110*60, options: {unit: 'minute', remainder: false, allow_hours: 48}},
-    	{time: 120*60, options: {unit: 'minute', remainder: false, allow_hours: 48}},
+    	{time: 571885, options: {unit: 'minute', suffix: true, remainder: false}},
+    	{time: 571885, options: {unit: 'minute', suffix: true, remainder: false}},
+    	{time: 12*60, options: {unit: 'minute', remainder: false}},
+    	{time: 36*60, options: {unit: 'minute', remainder: false}},
+    	{time: 48*60, options: {unit: 'minute', remainder: false}},
+    	{time: 60*60, options: {unit: 'minute', remainder: false}},
+    	{time: 72*60, options: {unit: 'minute', remainder: false}},
+    	{time: 84*60, options: {unit: 'minute', remainder: false}},
+    	{time: 96*60, options: {unit: 'minute', remainder: false}},
+    	{time: 110*60, options: {unit: 'minute', remainder: false}},
+    	{time: 120*60, options: {unit: 'minute', remainder: false}},
     ];
 
 
