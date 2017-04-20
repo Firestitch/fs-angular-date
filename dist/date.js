@@ -440,7 +440,11 @@
 
             var enabled = [], total_seconds = 0;
             angular.forEach(units,function(unit, name) {
-                enabled.push(name);
+
+                if(options[name]) {
+                    enabled.push(name);
+                }
+
                 total_seconds += pieces[name] * unit.seconds;
             });
 
