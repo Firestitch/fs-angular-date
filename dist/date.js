@@ -305,6 +305,7 @@
             format: format,
             range: range,
             granularDuration: granularDuration,
+            iso8601: iso8601,
             SECONDS_YEAR: 3600 * 24 * 365,
             SECONDS_MONTH: 3600 * 24 * 30.417,
             SECONDS_DAY: 3600 * 24,
@@ -439,7 +440,7 @@
 
             var enabled = [], total_seconds = 0;
             angular.forEach(units,function(unit, name) {
-            	enabled.push(name);
+                enabled.push(name);
                 total_seconds += pieces[name] * unit.seconds;
             });
 
@@ -495,6 +496,21 @@
             options.years = options.years===undefined ? false : options.years;
             options.precision = options.precision===undefined ? 3 : options.precision;
             return duration(time,options);
+        }
+
+
+        /**
+         * @ngdoc method
+         * @name iso8601
+         * @methodOf fs.services:fsDate
+         * @param {date|string} date The object to be converted
+         * @returns {string} The date string in iso8601
+         */
+        function iso8601(date) {
+            if(!date)
+                return '';
+
+            return moment(date).format();
         }
 
         /**

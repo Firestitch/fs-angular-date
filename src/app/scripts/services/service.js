@@ -10,14 +10,21 @@
      angular.module('fs-angular-date')
     .factory('fsDate', function(fsUtil,fsMath) {
 
-        return {
+        var service = {
             ago: ago,
             duration: duration,
             format: format,
             range: range,
-            granularDuration: granularDuration
+            granularDuration: granularDuration,
+            iso8601: iso8601,
+            SECONDS_YEAR: 3600 * 24 * 365,
+            SECONDS_MONTH: 3600 * 24 * 30.417,
+            SECONDS_DAY: 3600 * 24,
+            SECONDS_HOUR: 3600,
+            SECONDS_MINUTE: 60
         };
 
+        return service;
 
 
 
@@ -79,18 +86,12 @@
 
             time = Math.abs(parseInt(time));
 
-            var SECONDS_YEAR = 3600 * 24 * 365;
-            var SECONDS_MONTH = 3600 * 24 * 30.417;
-            var SECONDS_DAY = 3600 * 24;
-            var SECONDS_HOUR = 3600;
-            var SECONDS_MINUTE = 60;
-
             var units = {
-                years:      { abr: 'Y', single: 'year', plural: 'years', seconds: SECONDS_YEAR, next: 'months' },
-                months:     { abr: 'M', single: 'month', plural: 'months', seconds: SECONDS_MONTH, next: 'days' },
-                days:       { abr: 'd', single: 'day', plural: 'days', seconds: SECONDS_DAY, next: 'hours' },
-                hours:      { abr: 'h', single: 'hour', plural: 'hours', seconds: SECONDS_HOUR, next: 'months' },
-                minutes:    { abr: 'm', single: 'minute', plural: 'minutes', seconds: SECONDS_MINUTE, next: 'seconds' },
+                years:      { abr: 'Y', single: 'year', plural: 'years', seconds: service.SECONDS_YEAR, next: 'months' },
+                months:     { abr: 'M', single: 'month', plural: 'months', seconds: service.SECONDS_MONTH, next: 'days' },
+                days:       { abr: 'd', single: 'day', plural: 'days', seconds: service.SECONDS_DAY, next: 'hours' },
+                hours:      { abr: 'h', single: 'hour', plural: 'hours', seconds: service.SECONDS_HOUR, next: 'months' },
+                minutes:    { abr: 'm', single: 'minute', plural: 'minutes', seconds: service.SECONDS_MINUTE, next: 'seconds' },
                 seconds:    { abr: 's', single: 'second', plural: 'seconds', seconds: 1, next: null },
             };
 
@@ -106,94 +107,52 @@
             var remainder = time;
 
             if(options.years) {
-                //break time down into allowable units
-                //var total_years = time / SECONDS_YEAR;
-                var years = remainder / SECONDS_YEAR;
+                var years = remainder / service.SECONDS_YEAR;
                 if(years>=1) {
                     pieces.years = Math.floor(years);
-                    remainder = remainder - (pieces.years * SECONDS_YEAR);
+                    remainder = remainder - (pieces.years * service.SECONDS_YEAR);
                 }
             }
 
             if(options.months) {
-                //var total_months = time / SECONDS_MONTH;
-                var months = remainder / SECONDS_MONTH;
+                var months = remainder / service.SECONDS_MONTH;
 
                 if(months>=1) {
                     pieces.months =  Math.floor(months);
-                        remainder = remainder - (pieces.months * SECONDS_MONTH);
+                        remainder = remainder - (pieces.months * service.SECONDS_MONTH);
                 }
             }
 
             if(options.days) {
-                //var total_days = time / SECONDS_DAY;
-                var days = remainder / SECONDS_DAY;
+                var days = remainder / service.SECONDS_DAY;
                 if(days>=1) {
                     pieces.days = Math.floor(days);
-                    remainder = remainder - (pieces.days * SECONDS_DAY);
+                    remainder = remainder - (pieces.days * service.SECONDS_DAY);
                 }
             }
 
             if(options.hours) {
-                //var total_hours = time / SECONDS_HOUR;
-                var hours = remainder / SECONDS_HOUR;
+                var hours = remainder / service.SECONDS_HOUR;
                 if(hours>=1) {
                     pieces.hours = Math.floor(hours);
-                    remainder = remainder - (pieces.hours * SECONDS_HOUR);
+                    remainder = remainder - (pieces.hours * service.SECONDS_HOUR);
                 }
             }
 
             if(options.minutes) {
-                //var total_minutes = time / 60;
                 var minutes = remainder / 60;
                 if(minutes>=1) {
                     pieces.minutes = Math.floor(minutes);
-                    remainder = remainder - (pieces.minutes * SECONDS_MINUTE);
+                    remainder = remainder - (pieces.minutes * service.SECONDS_MINUTE);
                 }
             }
 
             pieces.seconds = Math.floor(remainder);
-/*
-            //if there are numeric limits and we're under it then adjust values
-            if(options.years && fsUtil.isInt(options.months) && total_years*12 <= options.months) {
-                pieces.months += (pieces.years * 12);
-                pieces.years = 0;
-            }
 
-            if(options.months && fsUtil.isInt(options.days) && total_months*30.5 <= options.days) {
-                pieces.days += (pieces.months * 30.5);
-                pieces.months = 0;
-            }
-            if(options.days && fsUtil.isInt(options.hours)  && total_days*24 <= options.hours) {
-                pieces.hours += (pieces.days * 24);
-                pieces.days = 0;
-            }
-            if(options.hours && fsUtil.isInt(options.minutes)  && total_hours*60 <= options.mintues) {
-                pieces.minutes += (pieces.hours * 60);
-                pieces.hours = 0;
-            }
-*/
-            var total_seconds = 0;
+            var enabled = [], total_seconds = 0;
             angular.forEach(units,function(unit, name) {
-                total_seconds += pieces[name] * unit.seconds;
-            });
-
-            var enabled = [];
-            angular.forEach(units,function(unit, name) {
-
                 enabled.push(name);
-                /*if(options[name]) {
-                    enabled.push(name);
-                } else {
-
-                    var multiply = unit.next ? unit.seconds/units[unit.next]['seconds'] : 1;
-                    var seconds = Math.floor(pieces[name] * multiply);
-                    if(unit.next) {
-                        pieces[unit.next] += seconds;
-                    }
-
-                    pieces[name] = 0;
-                }*/
+                total_seconds += pieces[name] * unit.seconds;
             });
 
             var output = [];
@@ -248,6 +207,21 @@
             options.years = options.years===undefined ? false : options.years;
             options.precision = options.precision===undefined ? 3 : options.precision;
             return duration(time,options);
+        }
+
+
+        /**
+         * @ngdoc method
+         * @name iso8601
+         * @methodOf fs.services:fsDate
+         * @param {date|string} date The object to be converted
+         * @returns {string} The date string in iso8601
+         */
+        function iso8601(date) {
+            if(!date)
+                return '';
+
+            return moment(date).format();
         }
 
         /**
