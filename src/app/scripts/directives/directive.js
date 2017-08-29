@@ -159,11 +159,13 @@
 	* @param {bool} fsAbr abreviate words (ie."h/hour")
 	* @param {bool} fsSuffix include "ago/from now"
 	* @param {int} fsPrecision number of unit types type show. default: all
-	* @param {int|bool} fsSeconds rollover limit. if false they are not shown. default 60
-	* @param {int|bool} fsMinutes rollover limit. if false they are not shown. default 60
-	* @param {int|bool} fsHours rollover limit. if false they are not shown. default 24
-	* @param {int|bool} fsDays rollover limit. if false they are not shown. default 30.5
-	* @param {int|bool} fsMonths rollover limit. if false they are not shown. default 12
+	* @param {int|bool} fsSeconds If false they are not shown.
+	* @param {int|bool} fsMinutes If false they are not shown.
+	* @param {int|bool} fsHours If false they are not shown.
+	* @param {int|bool} fsDays If false they are not shown.
+	* @param {int|bool} fsMonths If false they are not shown.
+	* @param {int|bool} fsYears If false they are not shown.
+	* @param {string} fsFormat The preset format for date durations
 	* @param {bool} fsYears default true
 	*/
 	.directive('fsDateDuration', function(fsDate) {
@@ -182,6 +184,7 @@
 			   months: "@?fsMonths",
 			   years: "@?fsYears",
 			   precision: "@?fsPrecision",
+			   format: "@?fsFormat"
 			},
 
 			controller: function($scope) {
@@ -189,26 +192,29 @@
 				$scope.$watch('time',function(time) {
 
 					var options = { unit: $scope.unit,
-								  abr: $scope.abr==='true',
-								  suffix: $scope.suffix==='true',
+								  	abr: $scope.abr==='true',
+								  	suffix: $scope.suffix==='true',
 								  };
 
-					if($scope.seconds!==undefined)
-						options.seconds = parseInt($scope.seconds);
-					if($scope.minutes!==undefined)
-						options.minutes = parseInt($scope.minutes);
-					if($scope.hours!==undefined)
-						options.hours = parseInt($scope.hours);
-					if($scope.days!==undefined)
-						options.days = parseInt($scope.days);
-					if($scope.months!==undefined)
-						options.months = parseInt($scope.months);
-					if($scope.years!==undefined)
-						options.years = parseInt($scope.years);
+					if($scope.seconds==='false')
+						options.seconds = false;
+					if($scope.minutes==='false')
+						options.minutes = false;
+					if($scope.hours==='false')
+						options.hours = false;
+					if($scope.days==='false')
+						options.days = false;
+					if($scope.months==='false')
+						options.months = false;
+					if($scope.years==='false')
+						options.years = false;
 
 					if($scope.precision!==undefined)
 						options.precision = parseInt($scope.precision);
 
+					if($scope.format) {
+						options = angular.extend({},fsDate.formatOptions($scope.format),options);
+					}
 
 					$scope.duration = fsDate.duration(time,options);
 				});

@@ -16,6 +16,7 @@
             format: format,
             range: range,
             granularDuration: granularDuration,
+            formatOptions: formatOptions,
             iso8601: iso8601,
             SECONDS_YEAR: 3600 * 24 * 365,
             SECONDS_MONTH: 3600 * 24 * 30.417,
@@ -51,26 +52,13 @@
                 return '';
 
             if(typeof options == 'string') {
-                options = { seconds: !!options.match(/second/),
-                            minutes: !!options.match(/minute/),
-                            hours: !!options.match(/hour/),
-                            days: !!options.match(/day/),
-                            months: !!options.match(/month/),
-                            years: !!options.match(/year/) };
-
-                options.precision = 0;
-                angular.forEach(options,function(value) {
-                    if(value) {
-                        options.precision++;
-                    }
-                });
+                options = formatOptions(options);
             }
 
             options = angular.copy(options) || {};
             options.unit = options.unit===undefined ? 'second' : options.unit;
             options.abr = options.abr===undefined ? true : options.abr;
             options.suffix = options.suffix===true ? (time>0 ? " ago" : " from now") : "";
-            options.precision = options.precision===undefined ? 2 : options.precision;
             options.seconds = options.seconds===undefined ? true : options.seconds;
             options.minutes = options.minutes===undefined ? true : options.minutes;
             options.hours = options.hours===undefined ? true : options.hours;
@@ -161,15 +149,18 @@
 
             var output = [];
             if(enabled.length===1) {
+
+                var precision = options.precision===undefined ? 1 : options.precision;
                 var name = enabled.join('');
-                var value = fsMath.round(total_seconds/units[name]['seconds'],1);
+                var value = fsMath.round(total_seconds/units[name]['seconds'],precision);
                 output.push(value + (options.abr ? units[name].abr :  ' ' + (value==1 ? units[name].single : units[name].plural)));
 
             } else {
+                var precision = options.precision===undefined ? 2 : options.precision;
 
                 angular.forEach(units, function(unit, name) {
 
-                    if(options.precision && output.length>=options.precision) {
+                    if(precision && output.length>=precision) {
                         return;
                     }
 
@@ -196,6 +187,25 @@
                 output.push(options.suffix);
 
             return output.join(' ');
+        }
+
+        function formatOptions(options) {
+            options = { seconds: !!options.match(/second/),
+                        minutes: !!options.match(/minute/),
+                        hours: !!options.match(/hour/),
+                        days: !!options.match(/day/),
+                        months: !!options.match(/month/),
+                        years: !!options.match(/year/) };
+
+            var precision = 0;
+            angular.forEach(options,function(value) {
+                if(value) {
+                    precision++;
+                }
+            });
+            options.precision = precision;
+
+            return options;
         }
 
         /**
