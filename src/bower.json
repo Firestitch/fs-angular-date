@@ -12,8 +12,8 @@
     "fs-boilerplate-styles": "latest",
     "moment": ">= 2.10.0",
     "moment-timezone": "latest",
-    "fs-angular-util": "^1.0.0",
-    "fs-angular-math": "^1.0.0",
+    "fs-angular-util": ">=1.1.0",
+    "fs-angular-math": ">=1.0.0",
     "fs-angular-string": "^1.0.0"
   },
   "resolutions": {

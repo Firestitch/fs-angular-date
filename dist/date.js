@@ -237,7 +237,7 @@
 	* @param {string} fsFormat The preset format for date durations
 	* @param {bool} fsYears default true
 	*/
-	.directive('fsDateDuration', function(fsDate) {
+	.directive('fsDateDuration', function(fsDate, fsUtil) {
 		return {
 			template: '{{duration}}',
 			restrict: 'E',
@@ -260,10 +260,12 @@
 
 				$scope.$watch('time',function(time) {
 
+  					var abr = $scope.abr===undefined ? true : fsUtil.boolean($scope.abr);
 					var options = { unit: $scope.unit,
-								  	abr: $scope.abr==='true',
+								  	abr: abr,
 								  	suffix: $scope.suffix==='true',
 								  };
+
 
 					if($scope.seconds==='false')
 						options.seconds = false;
